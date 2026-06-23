@@ -1,0 +1,14 @@
+# Virtual environment
+.venv/
+
+# Secrets
+.env
+
+# Lineage / pulled data
+data/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/

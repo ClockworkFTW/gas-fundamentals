@@ -1,0 +1,12 @@
+requests
+pandas
+beautifulsoup4
+lxml
+python-dateutil
+openpyxl
+python-dotenv
+tenacity
+pyarrow
+
+# dev / test
+pytest
