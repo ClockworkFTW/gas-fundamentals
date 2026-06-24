@@ -5,6 +5,7 @@ lxml
 python-dateutil
 python-dotenv
 tenacity
+truststore  # make requests trust the OS cert store (corp MITM CA via group policy)
 
 # dev / test
 pytest

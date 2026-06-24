@@ -26,6 +26,17 @@ import sys
 from typing import Any, Iterable, Optional
 from zoneinfo import ZoneInfo
 
+# Trust the OS certificate store rather than certifi's bundle, so requests works
+# behind a corporate TLS-inspection proxy (the company root CA is installed in the
+# Windows store via group policy but not in certifi). No-op if truststore is
+# absent; nothing here disables verification. Must run before any TLS connection.
+try:
+    import truststore
+
+    truststore.inject_into_ssl()
+except ImportError:
+    pass
+
 # Make the sibling packages (ebb / etl / metrics) importable as top-level, the
 # same way tests/conftest.py does — so this runs cleanly as `python -m src`.
 _SRC = pathlib.Path(__file__).resolve().parent
