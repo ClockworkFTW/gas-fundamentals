@@ -4,7 +4,7 @@
 # Secrets
 .env
 
-# Lineage / pulled data
+# Lineage / pulled data (fact partitions). Dimension CSVs under dim/ ARE committed.
 data/
 
 # Python caches

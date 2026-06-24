@@ -4,6 +4,7 @@ Parsing/resolution logic is tested with inline rows plus a real captured
 fixture (tests/fixtures/eia_weekly_storage.json). Refresh the fixture with
 .\\.venv\\Scripts\\python.exe tests\\refresh_fixtures.py (needs EIA_API_KEY).
 """
+import datetime as dt
 import json
 import pathlib
 
@@ -117,6 +118,53 @@ def test_normalize_real_fixture(client):
     assert pac[0].wow_change is None
     # WoW change equals the difference of consecutive weekly values.
     assert pac[1].wow_change == pytest.approx(pac[1].value - pac[0].value)
+
+
+def _band_rec(region, period, value):
+    return {"region": region, "period": period, "value": value}
+
+
+def test_five_year_band_basic():
+    # Same ISO week (week 25, Fri 20th) across 6 years; current 2026 vs prior 5.
+    recs = [
+        _band_rec("Pacific", "2021-06-25", 200.0),
+        _band_rec("Pacific", "2022-06-24", 210.0),
+        _band_rec("Pacific", "2023-06-23", 220.0),
+        _band_rec("Pacific", "2024-06-21", 230.0),
+        _band_rec("Pacific", "2025-06-20", 240.0),
+        _band_rec("Pacific", "2026-06-19", 200.0),  # current week
+    ]
+    bands = eia.five_year_bands(recs, years=5)
+    pac = bands["Pacific"]
+    assert pac["as_of_period"] == "2026-06-19"
+    assert pac["current"] == 200.0
+    assert pac["n_years"] == 5
+    assert pac["five_yr_avg"] == pytest.approx((200 + 210 + 220 + 230 + 240) / 5)  # 220
+    assert pac["five_yr_min"] == 200.0 and pac["five_yr_max"] == 240.0
+    assert pac["vs_5yr_pct"] == pytest.approx((200 - 220) / 220)  # below the 5-yr avg
+
+
+def test_five_year_band_excludes_current_year_and_caps_years():
+    # Friday of ISO week 25 each year, so all rows share the same report week
+    # (real EIA periods are week-ending Fridays that align by week across years).
+    def wk25_friday(yr):
+        return dt.date.fromisocalendar(yr, 25, 5).isoformat()
+
+    recs = [_band_rec("Pacific", wk25_friday(yr), float(yr)) for yr in range(2019, 2026)]
+    recs.append(_band_rec("Pacific", wk25_friday(2026), 9999.0))  # current year
+    bands = eia.five_year_bands(recs, years=5)
+    pac = bands["Pacific"]
+    assert pac["n_years"] == 5
+    # Most recent 5 prior years are 2021..2025; current (2026) excluded.
+    assert pac["five_yr_min"] == 2021.0 and pac["five_yr_max"] == 2025.0
+
+
+def test_five_year_band_no_history_is_honest():
+    recs = [_band_rec("Pacific", "2026-06-19", 200.0)]
+    pac = eia.five_year_bands(recs)["Pacific"]
+    assert pac["n_years"] == 0
+    assert pac["five_yr_avg"] is None and pac["vs_5yr_pct"] is None
+    assert pac["current"] == 200.0  # still reports the current level
 
 
 def test_record_serializes_expected_keys(client):

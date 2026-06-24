@@ -35,14 +35,10 @@ from zoneinfo import ZoneInfo
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import retry
 
-from .schema import FlowRecord, norm_date, to_float, utc_now_iso
+from .base import RETRY, BaseEBBClient, EbbChallengeError, write_raw
+from .schema import FlowRecord, collapse_ws, default_gas_day, norm_date, to_float, utc_now_iso
 
 log = logging.getLogger("ruby")
 
@@ -76,13 +72,12 @@ LOCATIONS = {"rbReceipt": "receipt", "rbDelivery": "delivery"}
 RETRIEVE_TRIGGER = "ctl00$mainContent$btnRetrieve"
 
 
-class RubyChallengeError(RuntimeError):
+class RubyChallengeError(EbbChallengeError, RuntimeError):
     """Raised when the Incapsula WAF returns its JS challenge instead of the page
-    (i.e. RUBY_COOKIE is missing/expired and must be refreshed from a browser)."""
+    (i.e. RUBY_COOKIE is missing/expired and must be refreshed from a browser).
 
-
-def _norm(text: str) -> str:
-    return " ".join((text or "").split())
+    Subclasses the shared ``EbbChallengeError`` and keeps ``RuntimeError`` for
+    backward compatibility with existing callers (CLI exit-2 handler, tests)."""
 
 
 def _parse_cookie_header(cookie: str) -> dict[str, str]:
@@ -101,7 +96,7 @@ def _parse_cookie_header(cookie: str) -> dict[str, str]:
 # --------------------------------------------------------------------------- #
 
 
-class RubyClient:
+class RubyClient(BaseEBBClient):
     def __init__(
         self,
         data_dir: pathlib.Path | str = "data/ruby",
@@ -109,27 +104,24 @@ class RubyClient:
         session: Optional[requests.Session] = None,
         timeout: int = 60,
     ) -> None:
-        self.data_dir = pathlib.Path(data_dir)
-        self.timeout = timeout
+        super().__init__(
+            data_dir,
+            session,
+            timeout,
+            headers={
+                "User-Agent": USER_AGENT,
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.9",
+            },
+        )
         if cookie is None:
             load_dotenv()
             cookie = os.getenv("RUBY_COOKIE")
         self.cookie = cookie
-        self.session = session or requests.Session()
-        self.session.headers.update({
-            "User-Agent": USER_AGENT,
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.9",
-        })
         for k, v in _parse_cookie_header(cookie or "").items():
             self.session.cookies.set(k, v, domain="pipeline.tallgrassenergylp.com")
 
-    @retry(
-        retry=retry_if_exception_type(requests.RequestException),
-        stop=stop_after_attempt(4),
-        wait=wait_exponential(multiplier=1, min=1, max=20),
-        reraise=True,
-    )
+    @retry(**RETRY)
     def _get_page(self) -> str:
         resp = self.session.get(OA_URL, timeout=self.timeout)
         resp.raise_for_status()
@@ -162,12 +154,7 @@ class RubyClient:
 
     # -- fetch ------------------------------------------------------------- #
 
-    @retry(
-        retry=retry_if_exception_type(requests.RequestException),
-        stop=stop_after_attempt(4),
-        wait=wait_exponential(multiplier=1, min=1, max=20),
-        reraise=True,
-    )
+    @retry(**RETRY)
     def fetch_location(
         self, fields: dict[str, str], location: str, gas_day: str, cycle_value: int,
         *, raw_dir: Optional[pathlib.Path] = None,
@@ -199,9 +186,7 @@ class RubyClient:
             "Referer": OA_URL,
         })
         resp.raise_for_status()
-        if raw_dir is not None:
-            raw_dir.mkdir(parents=True, exist_ok=True)
-            (raw_dir / f"oa_{LOCATIONS.get(location, location)}.html").write_text(resp.text, encoding="utf-8")
+        write_raw(raw_dir, f"oa_{LOCATIONS.get(location, location)}.html", resp.text)
         return resp.text
 
     # -- parse ------------------------------------------------------------- #
@@ -211,7 +196,7 @@ class RubyClient:
         soup = BeautifulSoup(html, "lxml")
         for tbl in soup.find_all("table"):
             head = tbl.find("tr")
-            if head and any("DesignCapacity" in _norm(c.get_text()) for c in head.find_all(["th", "td"])):
+            if head and any("DesignCapacity" in collapse_ws(c.get_text()) for c in head.find_all(["th", "td"])):
                 return tbl
         return None
 
@@ -223,7 +208,7 @@ class RubyClient:
         if tbl is None:
             return []
         trs = tbl.find_all("tr")
-        headers = [_norm(c.get_text()) for c in trs[0].find_all(["th", "td"])]
+        headers = [collapse_ws(c.get_text()) for c in trs[0].find_all(["th", "td"])]
         idx = {h: i for i, h in enumerate(headers)}
 
         def cell(cells: list[str], key: str) -> Optional[str]:
@@ -232,7 +217,7 @@ class RubyClient:
 
         records: list[FlowRecord] = []
         for tr in trs[1:]:
-            cells = [_norm(td.get_text()) for td in tr.find_all("td")]
+            cells = [collapse_ws(td.get_text()) for td in tr.find_all("td")]
             if len(cells) < len(headers):
                 continue
             name = cell(cells, "LocName") or ""
@@ -298,14 +283,6 @@ class RubyClient:
 # --------------------------------------------------------------------------- #
 
 
-def _default_gas_day() -> str:
-    now = dt.datetime.now(PACIFIC)
-    day = now.date()
-    if now.hour < 8:
-        day = day - dt.timedelta(days=1)
-    return day.isoformat()
-
-
 def main(argv: Optional[Iterable[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description="Pull Ruby (Tallgrass) operationally available capacity + scheduled quantity."
@@ -322,7 +299,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         format="%(levelname)s %(name)s: %(message)s",
     )
 
-    gas_day = args.gas_day or _default_gas_day()
+    gas_day = args.gas_day or default_gas_day(PACIFIC)
     client = RubyClient(data_dir=args.data_dir)
     try:
         result = client.pull(gas_day, args.cycle, write=not args.no_write)

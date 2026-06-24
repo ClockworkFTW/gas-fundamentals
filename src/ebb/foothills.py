@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
-import datetime as dt
 import json
 import logging
 import pathlib
@@ -29,7 +28,7 @@ from typing import Any, Iterable, Optional
 import requests
 
 from .nova import DEFAULT_HEAT_BTU_PER_CF, MOUNTAIN, NovaClient
-from .schema import FlowRecord, Notice, utc_now_iso
+from .schema import FlowRecord, Notice, default_gas_day, utc_now_iso
 
 log = logging.getLogger("foothills")
 
@@ -154,14 +153,6 @@ class FoothillsClient:
 # --------------------------------------------------------------------------- #
 
 
-def _default_gas_day() -> str:
-    now = dt.datetime.now(MOUNTAIN)
-    day = now.date()
-    if now.hour < 8:
-        day = day - dt.timedelta(days=1)
-    return day.isoformat()
-
-
 def main(argv: Optional[Iterable[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description="Pull Foothills export-border throughput/capacity (TC Customer Express feeds)."
@@ -179,7 +170,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         format="%(levelname)s %(name)s: %(message)s",
     )
 
-    gas_day = args.gas_day or _default_gas_day()
+    gas_day = args.gas_day or default_gas_day(MOUNTAIN)
     client = FoothillsClient(data_dir=args.data_dir, heat_btu_per_cf=args.heat_content)
     result = client.pull(gas_day, duration=args.duration, write=not args.no_write)
     print(json.dumps(result, indent=2))

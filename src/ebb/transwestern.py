@@ -32,14 +32,17 @@ from zoneinfo import ZoneInfo
 
 import requests
 from dateutil import parser as dtparser
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import retry
 
-from .schema import FlowRecord, Notice, to_float, utc_now_iso
+from .base import RETRY, BaseEBBClient, write_raw
+from .schema import (
+    FLOW_DIRECTION,
+    FlowRecord,
+    Notice,
+    default_gas_day,
+    to_float,
+    utc_now_iso,
+)
 
 log = logging.getLogger("transwestern")
 
@@ -60,7 +63,7 @@ PACIFIC = ZoneInfo("America/Los_Angeles")
 CYCLES = {"timely": 0, "evening": 1}
 CYCLE_LABEL = {0: "timely", 1: "evening"}
 
-FLOW_DIRECTION = {"R": "receipt", "D": "delivery"}
+# Flow indicator -> direction: schema.FLOW_DIRECTION (shared).
 
 # Notice categories (each its own CSV endpoint) and normalized type mapping.
 NOTICE_CATEGORIES = ("critical", "non-critical", "planned-service-outage")
@@ -88,34 +91,22 @@ NOTICE_LOOKBACK_DAYS = 3
 # --------------------------------------------------------------------------- #
 
 
-class TranswesternClient:
+class TranswesternClient(BaseEBBClient):
     def __init__(
         self,
         data_dir: pathlib.Path | str = "data/transwestern",
         session: Optional[requests.Session] = None,
         timeout: int = 60,
     ) -> None:
-        self.data_dir = pathlib.Path(data_dir)
-        self.timeout = timeout
-        self.session = session or requests.Session()
-        self.session.headers.update({"User-Agent": USER_AGENT, "Accept": "text/csv, */*"})
+        super().__init__(
+            data_dir, session, timeout, headers={"User-Agent": USER_AGENT, "Accept": "text/csv, */*"}
+        )
 
-    @retry(
-        retry=retry_if_exception_type(requests.RequestException),
-        stop=stop_after_attempt(4),
-        wait=wait_exponential(multiplier=1, min=1, max=20),
-        reraise=True,
-    )
+    @retry(**RETRY)
     def _get_csv(self, path: str, params: dict[str, Any]) -> str:
         resp = self.session.get(f"{BASE_URL}{path}", params=params, timeout=self.timeout)
         resp.raise_for_status()
         return resp.text
-
-    @staticmethod
-    def _write_raw(raw_dir: Optional[pathlib.Path], name: str, text: str) -> None:
-        if raw_dir is not None:
-            raw_dir.mkdir(parents=True, exist_ok=True)
-            (raw_dir / name).write_text(text, encoding="utf-8")
 
     # -- fetch ------------------------------------------------------------- #
 
@@ -145,7 +136,7 @@ class TranswesternClient:
                 "extension": "csv",
             },
         )
-        self._write_raw(raw_dir, "operational_capacity.csv", text)
+        write_raw(raw_dir, "operational_capacity.csv", text)
         return text
 
     def fetch_notice_category(
@@ -155,7 +146,7 @@ class TranswesternClient:
             NOTICE_PATH.format(category=category),
             {"asset": ASSET, "f": "csv", "extension": "csv"},
         )
-        self._write_raw(raw_dir, f"notices_{category}.csv", text)
+        write_raw(raw_dir, f"notices_{category}.csv", text)
         return text
 
     # -- parse ------------------------------------------------------------- #
@@ -289,14 +280,6 @@ class TranswesternClient:
 # --------------------------------------------------------------------------- #
 
 
-def _default_gas_day() -> str:
-    now = dt.datetime.now(PACIFIC)
-    day = now.date()
-    if now.hour < 8:
-        day = day - dt.timedelta(days=1)
-    return day.isoformat()
-
-
 def main(argv: Optional[Iterable[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description="Pull Transwestern (Energy Transfer / iPost) OAC + scheduled quantity + notices."
@@ -313,7 +296,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         format="%(levelname)s %(name)s: %(message)s",
     )
 
-    gas_day = args.gas_day or _default_gas_day()
+    gas_day = args.gas_day or default_gas_day(PACIFIC)
     client = TranswesternClient(data_dir=args.data_dir)
     result = client.pull(gas_day, args.cycle, write=not args.no_write)
     print(json.dumps(result, indent=2))

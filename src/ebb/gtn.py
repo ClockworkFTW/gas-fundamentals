@@ -27,14 +27,18 @@ from typing import Any, Iterable, Optional
 from zoneinfo import ZoneInfo
 
 import requests
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import retry
 
-from .schema import FlowRecord, Notice, norm_date, to_float, utc_now_iso
+from .base import RETRY, BaseEBBClient, write_raw
+from .schema import (
+    FLOW_DIRECTION,
+    FlowRecord,
+    Notice,
+    default_gas_day,
+    norm_date,
+    to_float,
+    utc_now_iso,
+)
 
 log = logging.getLogger("gtn")
 
@@ -61,8 +65,7 @@ CYCLE_TYPES = {
 }
 CYCLE_LABEL = {1: "Timely", 2: "Intraday 1", 3: "Intraday 2", 4: "Evening", 5: "Intraday 3"}
 
-# Flow indicator -> normalized direction.
-FLOW_DIRECTION = {"R": "receipt", "D": "delivery"}
+# Flow indicator -> normalized direction: schema.FLOW_DIRECTION (shared).
 
 # Notices grid (resourcetable). The view overrides FilterTemplate to "filter.<key>";
 # sort_direction must be the verbose "Descending"/"Ascending". indicator "" = all
@@ -85,31 +88,26 @@ NOTICE_LOOKAHEAD_DAYS = 45
 # --------------------------------------------------------------------------- #
 
 
-class GTNClient:
+class GTNClient(BaseEBBClient):
     def __init__(
         self,
         data_dir: pathlib.Path | str = "data/gtn",
         session: Optional[requests.Session] = None,
         timeout: int = 40,
     ) -> None:
-        self.data_dir = pathlib.Path(data_dir)
-        self.timeout = timeout
-        self.session = session or requests.Session()
-        self.session.headers.update(
-            {
+        super().__init__(
+            data_dir,
+            session,
+            timeout,
+            headers={
                 "User-Agent": USER_AGENT,
                 "Accept": "application/json, text/javascript, */*; q=0.01",
                 "X-Requested-With": "XMLHttpRequest",
                 "Referer": f"{BASE_URL}/{TSP}/OperationalCapacity",
-            }
+            },
         )
 
-    @retry(
-        retry=retry_if_exception_type(requests.RequestException),
-        stop=stop_after_attempt(4),
-        wait=wait_exponential(multiplier=1, min=1, max=20),
-        reraise=True,
-    )
+    @retry(**RETRY)
     def _get(self, path: str, params: Optional[dict[str, Any]] = None) -> dict[str, Any]:
         resp = self.session.get(f"{BASE_URL}/{path}", params=params, timeout=self.timeout)
         resp.raise_for_status()
@@ -133,9 +131,7 @@ class GTNClient:
             f"{TSP}/OperationalCapacity/Generate",
             params={"GasDay": f"{m}/{d}/{y}", "CycleType": cycle_type, "ExportEnum": 0},
         )
-        if raw_dir is not None:
-            raw_dir.mkdir(parents=True, exist_ok=True)
-            (raw_dir / "operational_capacity.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        write_raw(raw_dir, "operational_capacity.json", json.dumps(payload, indent=2))
         return payload
 
     # -- parse ------------------------------------------------------------- #
@@ -211,9 +207,7 @@ class GTNClient:
                 "sort_direction": "Descending",  # verbose form required (not "desc")
             },
         )
-        if raw_dir is not None:
-            raw_dir.mkdir(parents=True, exist_ok=True)
-            (raw_dir / "notices.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        write_raw(raw_dir, "notices.json", json.dumps(payload, indent=2))
         return payload.get("data", [])
 
     @staticmethod
@@ -282,15 +276,6 @@ class GTNClient:
 # --------------------------------------------------------------------------- #
 
 
-def _default_gas_day() -> str:
-    """Prior gas day before 08:00 PT, else today (PT)."""
-    now = dt.datetime.now(PACIFIC)
-    day = now.date()
-    if now.hour < 8:
-        day = day - dt.timedelta(days=1)
-    return day.isoformat()
-
-
 def main(argv: Optional[Iterable[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Pull GTN operationally available capacity + scheduled quantity.")
     parser.add_argument("--gas-day", default=None, help="ISO gas day, e.g. 2026-06-21. Default: latest available.")
@@ -302,7 +287,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
 
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
-    gas_day = args.gas_day or _default_gas_day()
+    gas_day = args.gas_day or default_gas_day(PACIFIC)
     client = GTNClient(data_dir=args.data_dir)
     result = client.pull(gas_day, args.cycle, write=not args.no_write)
     print(json.dumps(result, indent=2))

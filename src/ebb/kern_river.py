@@ -33,14 +33,19 @@ from zoneinfo import ZoneInfo
 
 import requests
 from bs4 import BeautifulSoup
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import retry
 
-from .schema import FlowRecord, Notice, norm_date, to_float, utc_now_iso
+from .base import RETRY, BaseEBBClient, write_raw
+from .schema import (
+    FLOW_DIRECTION,
+    FlowRecord,
+    Notice,
+    collapse_ws,
+    default_gas_day,
+    norm_date,
+    to_float,
+    utc_now_iso,
+)
 
 log = logging.getLogger("kern_river")
 
@@ -56,7 +61,7 @@ NOTICE_CATEGORIES = ("Critical", "Non-Critical", "Planned-Service-Outage")
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) gas-fundamentals/0.1 (+ingestion)"
 PACIFIC = ZoneInfo("America/Los_Angeles")
 
-FLOW_DIRECTION = {"R": "receipt", "D": "delivery"}  # BD (bidirectional compressor) -> None
+# Flow indicator -> direction: schema.FLOW_DIRECTION (R/D; BD -> None via .get()).
 
 # Notice category -> default normalized §5 type; overridden by a few Notice Type strings.
 CATEGORY_DEFAULT_TYPE = {
@@ -74,43 +79,27 @@ NOTICE_TYPE_OVERRIDES = (
 NOTICE_LOOKBACK_DAYS = 3
 
 
-def _norm(text: str) -> str:
-    return " ".join((text or "").split())
-
-
 # --------------------------------------------------------------------------- #
 # Client
 # --------------------------------------------------------------------------- #
 
 
-class KernRiverClient:
+class KernRiverClient(BaseEBBClient):
     def __init__(
         self,
         data_dir: pathlib.Path | str = "data/kern_river",
         session: Optional[requests.Session] = None,
         timeout: int = 60,
     ) -> None:
-        self.data_dir = pathlib.Path(data_dir)
-        self.timeout = timeout
-        self.session = session or requests.Session()
-        self.session.headers.update({"User-Agent": USER_AGENT, "Accept": "text/html,*/*"})
+        super().__init__(
+            data_dir, session, timeout, headers={"User-Agent": USER_AGENT, "Accept": "text/html,*/*"}
+        )
 
-    @retry(
-        retry=retry_if_exception_type(requests.RequestException),
-        stop=stop_after_attempt(4),
-        wait=wait_exponential(multiplier=1, min=1, max=20),
-        reraise=True,
-    )
+    @retry(**RETRY)
     def _get(self, path: str, params: Optional[dict[str, Any]] = None) -> str:
         resp = self.session.get(f"{BASE_URL}{path}", params=params, timeout=self.timeout)
         resp.raise_for_status()
         return resp.text
-
-    @staticmethod
-    def _write_raw(raw_dir: Optional[pathlib.Path], name: str, text: str) -> None:
-        if raw_dir is not None:
-            raw_dir.mkdir(parents=True, exist_ok=True)
-            (raw_dir / name).write_text(text, encoding="utf-8")
 
     # -- HTML grid helpers ------------------------------------------------- #
 
@@ -123,7 +112,7 @@ class KernRiverClient:
             first = tbl.find("tr")
             if not first:
                 continue
-            headers = [_norm(c.get_text()) for c in first.find_all(["th", "td"])]
+            headers = [collapse_ws(c.get_text()) for c in first.find_all(["th", "td"])]
             if all(any(r in h for h in headers) for r in req):
                 return tbl
         return None
@@ -133,7 +122,7 @@ class KernRiverClient:
         trs = tbl.find_all("tr")
         if not trs:
             return []
-        headers = [_norm(c.get_text()) for c in trs[0].find_all(["th", "td"])]
+        headers = [collapse_ws(c.get_text()) for c in trs[0].find_all(["th", "td"])]
         rows: list[dict[str, Any]] = []
         for tr in trs[1:]:
             cells = tr.find_all(["td", "th"])
@@ -142,7 +131,7 @@ class KernRiverClient:
             row: dict[str, Any] = {}
             for i, c in enumerate(cells):
                 if i < len(headers):
-                    row[headers[i]] = _norm(c.get_text())
+                    row[headers[i]] = collapse_ws(c.get_text())
             link = tr.find("a", href=True)
             row["_link"] = link["href"] if link else None
             rows.append(row)
@@ -156,14 +145,14 @@ class KernRiverClient:
         """OAC grid HTML for a gas day. ``gas_day`` is ISO; portal expects MM/DD/YYYY."""
         y, m, d = gas_day.split("-")
         text = self._get(OAC_PATH, {"gasDay": f"{m}/{d}/{y}"})
-        self._write_raw(raw_dir, "operational_capacity.html", text)
+        write_raw(raw_dir, "operational_capacity.html", text)
         return text
 
     def fetch_notice_category(
         self, category: str, *, raw_dir: Optional[pathlib.Path] = None
     ) -> str:
         text = self._get(NOTICE_PATH.format(category=category))
-        self._write_raw(raw_dir, f"notices_{category}.html", text)
+        write_raw(raw_dir, f"notices_{category}.html", text)
         return text
 
     # -- parse: OAC -------------------------------------------------------- #
@@ -301,14 +290,6 @@ class KernRiverClient:
 # --------------------------------------------------------------------------- #
 
 
-def _default_gas_day() -> str:
-    now = dt.datetime.now(PACIFIC)
-    day = now.date()
-    if now.hour < 8:
-        day = day - dt.timedelta(days=1)
-    return day.isoformat()
-
-
 def main(argv: Optional[Iterable[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description="Pull Kern River (BHE) operationally available capacity + scheduled quantity + notices."
@@ -324,7 +305,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         format="%(levelname)s %(name)s: %(message)s",
     )
 
-    gas_day = args.gas_day or _default_gas_day()
+    gas_day = args.gas_day or default_gas_day(PACIFIC)
     client = KernRiverClient(data_dir=args.data_dir)
     result = client.pull(gas_day, write=not args.no_write)
     print(json.dumps(result, indent=2))

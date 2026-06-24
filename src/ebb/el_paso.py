@@ -29,14 +29,10 @@ from zoneinfo import ZoneInfo
 
 import requests
 from bs4 import BeautifulSoup
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import retry
 
-from .schema import FlowRecord, Notice, norm_date, to_float, utc_now_iso
+from .base import RETRY, BaseEBBClient, write_raw
+from .schema import FLOW_DIRECTION, FlowRecord, Notice, norm_date, to_float, utc_now_iso
 
 log = logging.getLogger("el_paso")
 
@@ -108,7 +104,7 @@ COL = {
 }
 MIN_CELLS = 12  # a real data row has the full column set
 
-FLOW_DIRECTION = {"R": "receipt", "D": "delivery"}
+# Flow indicator -> direction: schema.FLOW_DIRECTION (shared).
 
 
 # --------------------------------------------------------------------------- #
@@ -116,43 +112,33 @@ FLOW_DIRECTION = {"R": "receipt", "D": "delivery"}
 # --------------------------------------------------------------------------- #
 
 
-class ElPasoClient:
+class ElPasoClient(BaseEBBClient):
     def __init__(
         self,
         data_dir: pathlib.Path | str = "data/el_paso",
         session: Optional[requests.Session] = None,
         timeout: int = 60,
     ) -> None:
-        self.data_dir = pathlib.Path(data_dir)
-        self.timeout = timeout
-        self.session = session or requests.Session()
-        self.session.headers.update(
-            {
+        super().__init__(
+            data_dir,
+            session,
+            timeout,
+            headers={
                 "User-Agent": USER_AGENT,
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 "Accept-Language": "en-US,en;q=0.9",
-            }
+            },
         )
 
     # -- fetch ------------------------------------------------------------- #
 
-    @retry(
-        retry=retry_if_exception_type(requests.RequestException),
-        stop=stop_after_attempt(4),
-        wait=wait_exponential(multiplier=1, min=1, max=20),
-        reraise=True,
-    )
+    @retry(**RETRY)
     def _get(self, path: str) -> str:
         r = self.session.get(f"{BASE_URL}{path}", timeout=self.timeout)
         r.raise_for_status()
         return r.text
 
-    @retry(
-        retry=retry_if_exception_type(requests.RequestException),
-        stop=stop_after_attempt(4),
-        wait=wait_exponential(multiplier=1, min=1, max=20),
-        reraise=True,
-    )
+    @retry(**RETRY)
     def _post(self, path: str, data: dict[str, str]) -> str:
         r = self.session.post(f"{BASE_URL}{path}", data=data, timeout=self.timeout)
         r.raise_for_status()
@@ -237,9 +223,7 @@ class ElPasoClient:
         fields["__EVENTTARGET"] = RETRIEVE_TARGET
         fields["__EVENTARGUMENT"] = ""
         html = self._post(OAC_PATH, fields)
-        if raw_dir is not None:
-            raw_dir.mkdir(parents=True, exist_ok=True)
-            (raw_dir / "operational_capacity.html").write_text(html, encoding="utf-8")
+        write_raw(raw_dir, "operational_capacity.html", html)
         return html
 
     # -- parse ------------------------------------------------------------- #
@@ -317,9 +301,7 @@ class ElPasoClient:
     def fetch_notices(self, *, raw_dir: Optional[pathlib.Path] = None) -> str:
         """The notices page renders the full grid on a plain GET (no postback)."""
         html = self._get(NOTICES_PATH)
-        if raw_dir is not None:
-            raw_dir.mkdir(parents=True, exist_ok=True)
-            (raw_dir / "notices.html").write_text(html, encoding="utf-8")
+        write_raw(raw_dir, "notices.html", html)
         return html
 
     def parse_notices(self, html: str, pulled_at: str) -> list[Notice]:

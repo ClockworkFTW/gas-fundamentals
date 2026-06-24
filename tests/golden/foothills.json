@@ -1,0 +1,242 @@
+{
+  "source": "foothills",
+  "gas_day": "2026-06-21",
+  "cycle": "daily",
+  "pulled_at_utc": "2026-06-22T15:00:00Z",
+  "records": [
+    {
+      "source": "foothills",
+      "dataset_type": "operationally_available",
+      "gas_day": "2026-06-21",
+      "cycle": "daily",
+      "point_name": "Foothills BC (AB/BC → Kingsgate → GTN → Malin → PG&E)",
+      "point_id": "AB/BC",
+      "flow_direction": "delivery",
+      "scheduled_qty": 2517876.2,
+      "design_capacity": 3148648.5,
+      "operational_capacity": 3247695.4,
+      "available_capacity": 729819.2,
+      "units": "Dth/d",
+      "original_units": "10^3m^3/d",
+      "original_qty": 69000.0,
+      "pulled_at_utc": "2026-06-22T15:00:00Z",
+      "raw_ref": "data/foothills/2026-06-21"
+    },
+    {
+      "source": "foothills",
+      "dataset_type": "scheduled_quantity",
+      "gas_day": "2026-06-21",
+      "cycle": "current",
+      "point_name": "Empress border (Foothills SK / Canadian Mainline)",
+      "point_id": "Empress Border Flow",
+      "flow_direction": "delivery",
+      "scheduled_qty": 4155000.0,
+      "design_capacity": null,
+      "operational_capacity": null,
+      "available_capacity": null,
+      "units": "Dth/d",
+      "original_units": "MMcf/d",
+      "original_qty": 4155.0,
+      "pulled_at_utc": "2026-06-22T15:00:00Z",
+      "raw_ref": "data/foothills/2026-06-21 @ 2026-06-21 23:29:48"
+    },
+    {
+      "source": "foothills",
+      "dataset_type": "scheduled_quantity",
+      "gas_day": "2026-06-21",
+      "cycle": "current",
+      "point_name": "McNeill border (Foothills SK)",
+      "point_id": "Mcneil Border Flow",
+      "flow_direction": "delivery",
+      "scheduled_qty": 700000.0,
+      "design_capacity": null,
+      "operational_capacity": null,
+      "available_capacity": null,
+      "units": "Dth/d",
+      "original_units": "MMcf/d",
+      "original_qty": 700.0,
+      "pulled_at_utc": "2026-06-22T15:00:00Z",
+      "raw_ref": "data/foothills/2026-06-21 @ 2026-06-21 23:29:48"
+    },
+    {
+      "source": "foothills",
+      "dataset_type": "scheduled_quantity",
+      "gas_day": "2026-06-21",
+      "cycle": "current",
+      "point_name": "Foothills BC border (→ Kingsgate → PG&E)",
+      "point_id": "Alberta-BC Border Flow",
+      "flow_direction": "delivery",
+      "scheduled_qty": 2478000.0,
+      "design_capacity": null,
+      "operational_capacity": null,
+      "available_capacity": null,
+      "units": "Dth/d",
+      "original_units": "MMcf/d",
+      "original_qty": 2478.0,
+      "pulled_at_utc": "2026-06-22T15:00:00Z",
+      "raw_ref": "data/foothills/2026-06-21 @ 2026-06-21 23:29:48"
+    }
+  ],
+  "notices": [
+    {
+      "source": "foothills",
+      "gas_day": "2026-06-22",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "USJR, WGAT, EGAT, NEDA, OSDA",
+      "headline": "Meikle River D5 - Compressor Station Maintenance",
+      "body": "Potential impact to FT-R. Affects Foothills BC, Foothills SK. Affected areas: Segments 2, 3, 4, and partial 7 (Upstream of Berland); Alberta/BC and Alberta/Montana Borders; Empress/McNeill Borders; Segments 6, 10, 11, 13, 14, 15, 16, 23, 24, and partial 28; Segments 10, 11, and 14. Effective 2026-06-22 through 2026-06-26.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-07-02",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "USJR, WGAT, EGAT",
+      "headline": "Gold Creek - Compressor Station Maintenance",
+      "body": "Potential impact to FT-R. Affects Foothills BC, Foothills SK. Affected areas: Segments 2, 3, 4, 5 and partial 7 (Upstream of Emerson); Alberta/BC and Alberta/Montana Borders; Empress/McNeill Borders. Effective 2026-07-02 through 2026-07-06.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-07-05",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "USJR, WGAT, EGAT",
+      "headline": "Emerson Creek A1 - Compressor Station Maintenance",
+      "body": "Potential impact to FT-R. Affects Foothills BC, Foothills SK. Affected areas: USJR; Alberta/BC and Alberta/Montana Borders; Empress/McNeill Borders. Effective 2026-07-05 through 2026-07-09.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-07-08",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "USJR, WGAT, EGAT",
+      "headline": "Emerson Creek - Compressor Station Maintenance",
+      "body": "Potential impact to FT-R. Affects Foothills BC, Foothills SK. Affected areas: USJR; Alberta/BC and Alberta/Montana Borders; Empress/McNeill Borders. Effective 2026-07-08 through 2026-07-09.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-07-08",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "USJR, WGAT, EGAT",
+      "headline": "Emerson Creek B2 - Compressor Station Maintenance",
+      "body": "Potential impact to FT-R. Affects Foothills BC, Foothills SK. Affected areas: USJR; Alberta/BC and Alberta/Montana Borders; Empress/McNeill Borders. Effective 2026-07-08 through 2026-07-11.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-07-11",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "USJR, WGAT, EGAT",
+      "headline": "Meikle River B2 - Compressor Station Maintenance",
+      "body": "Potential impact to FT-R. Affects Foothills BC, Foothills SK. Affected areas: Segments 2, 3, 4, 5 and partial 7 (Upstream of Emerson); Alberta/BC and Alberta/Montana Borders; Empress/McNeill Borders. Effective 2026-07-11 through 2026-07-17.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-07-18",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "USJR, WGAT, EGAT",
+      "headline": "NPS 30 Western Alberta System Mainline - Pipeline Modification",
+      "body": "Potential impact to FT-R. Affects Foothills BC, Foothills SK. Affected areas: USJR; Alberta/BC and Alberta/Montana Borders; Empress/McNeill Borders. Effective 2026-07-18 through 2026-07-27.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-08-04",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "USJR, WGAT, EGAT, NEDA, OSDA",
+      "headline": "Meikle River C - Compressor Station Maintenance",
+      "body": "Potential impact to FT-R. Affects Foothills BC, Foothills SK. Affected areas: Segments 2, 3, 4, and partial 7 (Upstream of Berland); Alberta/BC and Alberta/Montana Borders; Empress/McNeill Borders; Segments 6, 10, 11, 13, 14, 15, 16, 23, 24, and partial 28; Segments 10, 11, and 14. Effective 2026-08-04 through 2026-08-08.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-07-19",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "WGAT",
+      "headline": "Burton Creek - Compressor Station Maintenance",
+      "body": "Potential Impact to FT-D. Affects Foothills BC. Affected areas: Alberta/BC and Alberta/Montana Borders. Effective 2026-07-19 through 2026-07-24.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-07-13",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "FHZ8",
+      "headline": "NPS 36 Foothills Zone 8 Segment 3 - Pipeline Maintenance",
+      "body": "Potential Impact to FT. Affects Foothills BC. Affected areas: Alberta/BC Border. Effective 2026-07-13 through 2026-07-16.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-07-20",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "FHZ8",
+      "headline": "NPS 36 Foothills Zone 8 Segment 4 - Pipeline Maintenance",
+      "body": "Potential Impact to FT. Affects Foothills BC. Affected areas: Alberta/BC Border. Effective 2026-07-20 through 2026-07-24.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-08-04",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "FHZ8",
+      "headline": "Crowsnest A - Compressor Station Maintenance",
+      "body": "Potential Impact to FT. Affects Foothills BC. Affected areas: Alberta/BC Border. Effective 2026-08-04 through 2026-08-13.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-08-05",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "FHZ8",
+      "headline": "NPS 36 British Columbia Mainline - Pipeline Maintenance",
+      "body": "Potential Impact to FT. Affects Foothills BC. Affected areas: Alberta/BC Border. Effective 2026-08-05 through 2026-08-12.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-07-02",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "EGAT",
+      "headline": "Red Deer River - Compressor Station Maintenance",
+      "body": "No impact to FT-D anticipated. Affects Foothills SK. Affected areas: Empress/McNeill Borders. Effective 2026-07-02 through 2026-07-11.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-07-11",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "EGAT",
+      "headline": "Crawling Valley - Compressor Station Maintenance",
+      "body": "No impact to FT-D anticipated. Affects Foothills SK. Affected areas: Empress/McNeill Borders. Effective 2026-07-11 through 2026-07-17.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    },
+    {
+      "source": "foothills",
+      "gas_day": "2026-07-20",
+      "posted_at": null,
+      "notice_type": "maintenance",
+      "stage": "EGAT",
+      "headline": "Schrader Creek - Compressor Station Maintenance",
+      "body": "No impact to FT-D anticipated. Affects Foothills SK. Affected areas: Empress/McNeill Borders. Effective 2026-07-20 through 2026-07-29.",
+      "url": "https://my.tccustomerexpress.com/#Outages"
+    }
+  ]
+}

@@ -12,6 +12,11 @@ from typing import Any, Optional
 
 UTC = dt.timezone.utc
 
+# NAESB flow indicator -> normalized direction. Shared by the OAC pipeline
+# clients (gtn, el_paso, transwestern, kern_river); "BD" (bidirectional
+# compressor) and anything else fall through to None via .get().
+FLOW_DIRECTION = {"R": "receipt", "D": "delivery"}
+
 
 @dataclasses.dataclass
 class FlowRecord:
@@ -58,6 +63,24 @@ class Notice:
 
 def utc_now_iso() -> str:
     return dt.datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def collapse_ws(text: Any) -> str:
+    """Collapse all runs of whitespace to single spaces and strip (HTML cell text)."""
+    return " ".join((text or "").split())
+
+
+def default_gas_day(tz: dt.tzinfo) -> str:
+    """Latest available gas day in ``tz``: prior day before 08:00 local, else today.
+
+    The shared CLI default for the pipeline clients (Pacific) and the Canadian
+    systems (Mountain) — prior-day final isn't posted until ~08:00 local.
+    """
+    now = dt.datetime.now(tz)
+    day = now.date()
+    if now.hour < 8:
+        day = day - dt.timedelta(days=1)
+    return day.isoformat()
 
 
 def to_float(value: Any) -> Optional[float]:

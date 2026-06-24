@@ -1,0 +1,10 @@
+pipeline,owner,role,zones,active
+pipe_ranger,PG&E,"CGT backbone + Citygate operator (receipts, storage, inventory)",Malin;Topock;Daggett;Citygate,True
+gtn,TC Energy,Malin receipts (W. Canada via Kingsgate),Malin,True
+el_paso,Kinder Morgan,Topock receipts (Southwest),Topock,True
+transwestern,Energy Transfer,Topock receipts (San Juan/Permian/West Texas),Topock,True
+kern_river,Berkshire Hathaway Energy,Daggett receipts (Rockies/Opal),Daggett,True
+nova,TC Energy,AECO/NIT upstream supply (NGTL),AECO;NIT,True
+foothills,TC Energy,AECO -> Kingsgate export border,Kingsgate,True
+ruby,Tallgrass,Malin receipts (Rockies) - INACTIVE; onyx_ruby via Pipe Ranger,Malin,False
+eia,U.S. EIA,Macro weekly storage context (Pacific/Lower 48),Pacific;Lower 48,True

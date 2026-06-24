@@ -49,14 +49,10 @@ from typing import Any, Iterable, Optional
 from zoneinfo import ZoneInfo
 
 import requests
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import retry
 
-from .schema import FlowRecord, Notice, norm_date, to_float, utc_now_iso
+from .base import RETRY, BaseEBBClient, write_raw
+from .schema import FlowRecord, Notice, default_gas_day, norm_date, to_float, utc_now_iso
 
 log = logging.getLogger("nova")
 
@@ -122,7 +118,7 @@ NOTICE_LOOKAHEAD_DAYS = 45
 # --------------------------------------------------------------------------- #
 
 
-class NovaClient:
+class NovaClient(BaseEBBClient):
     def __init__(
         self,
         data_dir: pathlib.Path | str = "data/nova",
@@ -130,57 +126,46 @@ class NovaClient:
         timeout: int = 60,
         heat_btu_per_cf: float = DEFAULT_HEAT_BTU_PER_CF,
     ) -> None:
-        self.data_dir = pathlib.Path(data_dir)
-        self.timeout = timeout
-        self.heat_btu_per_cf = heat_btu_per_cf
-        self.session = session or requests.Session()
-        self.session.headers.update(
-            {
+        super().__init__(
+            data_dir,
+            session,
+            timeout,
+            headers={
                 "User-Agent": USER_AGENT,
                 "Accept": "text/csv, */*",
                 "Origin": "https://my.tccustomerexpress.com",
                 "Referer": SPA_URL,
-            }
+            },
         )
+        self.heat_btu_per_cf = heat_btu_per_cf
 
-    @retry(
-        retry=retry_if_exception_type(requests.RequestException),
-        stop=stop_after_attempt(4),
-        wait=wait_exponential(multiplier=1, min=1, max=20),
-        reraise=True,
-    )
+    @retry(**RETRY)
     def _get_csv(self, path: str, params: Optional[dict[str, Any]] = None) -> str:
         resp = self.session.get(f"{API_BASE}/{path}", params=params, timeout=self.timeout)
         resp.raise_for_status()
         return resp.text
 
-    @staticmethod
-    def _write_raw(raw_dir: Optional[pathlib.Path], name: str, text: str) -> None:
-        if raw_dir is not None:
-            raw_dir.mkdir(parents=True, exist_ok=True)
-            (raw_dir / name).write_text(text, encoding="utf-8")
-
     # -- fetch ------------------------------------------------------------- #
 
     def fetch_capability_flow(self, *, raw_dir: Optional[pathlib.Path] = None) -> str:
         text = self._get_csv("chart/csv")
-        self._write_raw(raw_dir, "chart.csv", text)
+        write_raw(raw_dir, "chart.csv", text)
         return text
 
     def fetch_system_report(self, *, duration: int = 2, raw_dir: Optional[pathlib.Path] = None) -> str:
         # Fetch in MMcf so the conversion reuses the heat-content assumption.
         text = self._get_csv("csr/csv/", params={"unit": "MMcf", "duration": duration})
-        self._write_raw(raw_dir, "csr.csv", text)
+        write_raw(raw_dir, "csr.csv", text)
         return text
 
     def fetch_outages(self, *, raw_dir: Optional[pathlib.Path] = None) -> str:
         text = self._get_csv("csv/outages/")
-        self._write_raw(raw_dir, "outages.csv", text)
+        write_raw(raw_dir, "outages.csv", text)
         return text
 
     def fetch_plant_turnarounds(self, *, raw_dir: Optional[pathlib.Path] = None) -> str:
         text = self._get_csv("plantturnaroundactivity/csv/")
-        self._write_raw(raw_dir, "plant_turnarounds.csv", text)
+        write_raw(raw_dir, "plant_turnarounds.csv", text)
         return text
 
     # -- conversion helpers ------------------------------------------------ #
@@ -476,15 +461,6 @@ class NovaClient:
 # --------------------------------------------------------------------------- #
 
 
-def _default_gas_day() -> str:
-    """Latest NGTL gas day (Mountain). Before 08:00 MT use the prior day."""
-    now = dt.datetime.now(MOUNTAIN)
-    day = now.date()
-    if now.hour < 8:
-        day = day - dt.timedelta(days=1)
-    return day.isoformat()
-
-
 def main(argv: Optional[Iterable[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description="Pull NOVA/NGTL (TC Energy) capability+flow, system balance, and outages."
@@ -502,7 +478,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         format="%(levelname)s %(name)s: %(message)s",
     )
 
-    gas_day = args.gas_day or _default_gas_day()
+    gas_day = args.gas_day or default_gas_day(MOUNTAIN)
     client = NovaClient(data_dir=args.data_dir, heat_btu_per_cf=args.heat_content)
     result = client.pull(gas_day, duration=args.duration, write=not args.no_write)
     print(json.dumps(result, indent=2))

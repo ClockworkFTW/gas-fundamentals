@@ -27,14 +27,10 @@ from typing import Any, Iterable, Optional
 from zoneinfo import ZoneInfo
 
 import requests
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import retry
 
-from .schema import FlowRecord, Notice, norm_date, to_float, utc_now_iso
+from .base import RETRY, BaseEBBClient, write_raw
+from .schema import FlowRecord, Notice, default_gas_day, norm_date, to_float, utc_now_iso
 
 log = logging.getLogger("pipe_ranger")
 
@@ -57,7 +53,7 @@ DEFAULT_HEAT_CONTENT_BTU_PER_CF = 1000.0
 # JSON servlets we read (README §8).  POST endpoints are noted in fetch methods.
 ENDPOINTS = {
     "scheduled_volumes": "scheduledvolumes",          # scheduled flows by path/cycle (Dth)
-    "physical_capacity": "dthphysicalpipeline",       # physical capacity (Dth)
+    "physical_capacity": "dthphysicalpipeline",       # physical capacity PlanData (MMcf; name is a misnomer)
     "supply_demand": "supplydemand",                  # 7-day supply/demand PlanData (MMcf)
     "storage": "storageactivity",                     # storage inj/withdrawal PlanData (MMcf)
     "inventory_summary": "systeminventorysummary",    # forecast inventory PlanData (MMcf)
@@ -84,7 +80,8 @@ SCHEDULED_POINTS: dict[str, tuple[str, str]] = {
     "off_frp": ("Off-System FRP", "delivery"),
 }
 
-# dthphysicalpipeline PlanData field -> point_name (physical/design capacity, Dth).
+# dthphysicalpipeline PlanData field -> point_name (physical/design capacity, MMcf
+# -> converted to Dth on ingest, like the other PlanData servlets).
 CAPACITY_POINTS: dict[str, str] = {
     "Redwood_Phys_Cap": "Redwood Path",
     "Phys_PGT_NW": "Malin (GTN)",
@@ -175,7 +172,7 @@ def _plan_day_index(plan_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
 # --------------------------------------------------------------------------- #
 
 
-class PipeRangerClient:
+class PipeRangerClient(BaseEBBClient):
     def __init__(
         self,
         data_dir: pathlib.Path | str = "data/pipe_ranger",
@@ -183,27 +180,22 @@ class PipeRangerClient:
         session: Optional[requests.Session] = None,
         timeout: int = 30,
     ) -> None:
-        self.data_dir = pathlib.Path(data_dir)
-        self.heat_content = heat_content_btu_per_cf
-        self.timeout = timeout
-        self.session = session or requests.Session()
-        self.session.headers.update(
-            {
+        super().__init__(
+            data_dir,
+            session,
+            timeout,
+            headers={
                 "User-Agent": USER_AGENT,
                 "Accept": "application/json, text/javascript, */*; q=0.01",
                 "X-Requested-With": "XMLHttpRequest",
                 "Referer": REFERER,
-            }
+            },
         )
+        self.heat_content = heat_content_btu_per_cf
 
     # -- fetch ------------------------------------------------------------- #
 
-    @retry(
-        retry=retry_if_exception_type(requests.RequestException),
-        stop=stop_after_attempt(4),
-        wait=wait_exponential(multiplier=1, min=1, max=20),
-        reraise=True,
-    )
+    @retry(**RETRY)
     def _request(self, method: str, endpoint: str, **kwargs: Any) -> str:
         url = f"{BASE_URL}/{endpoint}"
         resp = self.session.request(method, url, timeout=self.timeout, **kwargs)
@@ -225,9 +217,7 @@ class PipeRangerClient:
             text = self._request("POST", endpoint, data={"ofotype": key})
         else:
             text = self._request("GET", endpoint)
-        if raw_dir is not None:
-            raw_dir.mkdir(parents=True, exist_ok=True)
-            (raw_dir / f"{key}.json").write_text(text, encoding="utf-8")
+        write_raw(raw_dir, f"{key}.json", text)
         return self._decode(text)
 
     # -- parse ------------------------------------------------------------- #
@@ -281,9 +271,13 @@ class PipeRangerClient:
             day_meta = _plan_day_index(plan).get(gas_day, {})
             cycle = "Final" if str(day_meta.get("Plan_Num")) == "F" else day_meta.get("id")
             for field, point in CAPACITY_POINTS.items():
-                cap = to_float(plan.get(field))
-                if cap is None:
+                cap_mmcf = to_float(plan.get(field))
+                if cap_mmcf is None:
                     continue
+                # dthphysicalpipeline PlanData is **MMcf** like the other PlanData
+                # servlets (the "dth" in the name is a misnomer); convert to the
+                # canonical Dth so it joins cleanly with the Dth scheduled flows.
+                cap = mmcf_to_dth(cap_mmcf, self.heat_content)
                 out.append(
                     FlowRecord(
                         source=SOURCE,
@@ -294,12 +288,12 @@ class PipeRangerClient:
                         point_id=field,
                         flow_direction="receipt",
                         scheduled_qty=None,
-                        design_capacity=cap,           # already Dth
+                        design_capacity=cap,
                         operational_capacity=cap,
                         available_capacity=None,
                         units="Dth/d",
-                        original_units="Dth/d",
-                        original_qty=cap,
+                        original_units="MMcf/d",
+                        original_qty=cap_mmcf,
                         pulled_at_utc=pulled_at,
                         raw_ref=raw_ref,
                     )
@@ -504,15 +498,6 @@ class PipeRangerClient:
 # --------------------------------------------------------------------------- #
 
 
-def _default_gas_day() -> str:
-    """Prior gas day before 08:00 PT (final not yet posted), else today (PT)."""
-    now = dt.datetime.now(PACIFIC)
-    day = now.date()
-    if now.hour < 8:
-        day = day - dt.timedelta(days=1)
-    return day.isoformat()
-
-
 def main(argv: Optional[Iterable[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Pull PG&E Pipe Ranger data for a gas day/cycle.")
     parser.add_argument("--gas-day", default=None, help="ISO gas day (Pacific), e.g. 2026-06-21. Default: latest available.")
@@ -525,7 +510,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
 
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
-    gas_day = args.gas_day or _default_gas_day()
+    gas_day = args.gas_day or default_gas_day(PACIFIC)
     client = PipeRangerClient(data_dir=args.data_dir, heat_content_btu_per_cf=args.heat_content)
     result = client.pull(gas_day, args.cycle, write=not args.no_write)
     print(json.dumps(result, indent=2))
