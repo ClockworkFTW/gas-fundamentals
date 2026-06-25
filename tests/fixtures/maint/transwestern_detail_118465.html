@@ -1,0 +1,189 @@
+<!-- BEGIN: grails-app/views/layouts/modal.gsp -->
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <a href="javascript: void(0)" class="modal-print" ><img src="/ipost/assets/print-bd499ec72c6d5650aa165155dc9498b0.png" /></a>
+        <a href="javascript: void(0)" class="modal-email" ><img src="/ipost/assets/email-df3404947e75b5ef674a34c3044093bc.png" /></a>
+        <h3 class="modal-title" id="modalLabel-info">TW Planned Service Outage</h3>
+    </div>
+    
+        <div id="modal-email-form" class="modal-email-form hidden">
+            <form action="/ipost/notice/index/emailForm" method="post" class="form-horizontal" role="form" name="emailForm" id="emailForm" >
+                <input type="hidden" name="subject" value="TW Planned Service Outage" id="subject" />
+                <input type="hidden" id="modal-note" name="note" value="note" />
+                <div class="form-group">
+                    <label for="inputEmail" class="col-sm-3 control-label">Email Address:</label>
+                    <div class="col-sm-5">
+                        <input type="email" class="form-control input-sm" id="inputEmail" placeholder="Email" name="emailAddress" value="" >
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="button" class="btn btn-primary" onclick="sendEmail()">Send Email</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    
+    <div class="modal-body">
+        <!-- BEGIN: grails-app/views/notice/show.gsp -->
+
+
+<meta name="layout" content="modal">
+	<!-- BEGIN: grails-app/views/notice/_showHeader.gsp -->
+
+	
+		
+	
+		
+	
+		
+	
+	
+
+<!-- END: grails-app/views/notice/_showHeader.gsp -->
+	<!-- BEGIN: grails-app/views/override/ETE/notice/_showBody.gsp -->
+
+<!-- BEGIN: grails-app/views/layouts/table.gsp -->
+<table class="table table-bordered table-striped table-condensed table-hover" id="">
+
+	
+	<tbody>
+		<tr class="odd">
+			<td class="col-md-2">Notice Type Description:</td>
+			<td>
+				Planned Service Outage
+			</td>
+		</tr>
+		<tr class="even">
+			<td class="col-md-2">Notice Identifier:</td>
+			<td>118465</td>
+
+		</tr>
+		<tr class="odd">
+			<td class="col-md-2">Critical Notice Description:</td>
+			<td>
+				Critical notice
+			</td>
+		</tr>
+		<tr class="even">
+			<td class="col-md-2">Posting Date/Time:</td>
+			<td>
+				Jun 11 2026 10:38AM
+			</td>
+		</tr>
+		<tr class="odd">
+			<td class="col-md-2">Notice Status Description:</td>
+			<td>
+				Initiate
+			</td>
+		</tr>
+		<tr class="even">
+			<td class="col-md-2">Required Response Indicator Description:</td>
+			<td>
+				No response required
+			</td>
+		</tr>	
+		<tr class="odd">
+			<td class="col-md-2">Response Date/Time:</td>
+			<td>
+				
+			</td>
+		</tr>	
+		<tr class="even">
+			<td class="col-md-2">TSP:</td>
+			<td>
+				7933047
+			</td>
+		</tr>	
+		<tr class="odd">
+			<td class="col-md-2">TSP Name:</td>
+			<td>
+				TRANSWESTERN PIPELINE COMPANY, LLC
+			</td>
+		</tr>
+		<tr class="even">
+			<td class="col-md-2">Subject:</td>
+			<td>
+				East Mainline system - Compressor Station maintenance. 6/16 thru 6/29/26
+			</td>
+		</tr>
+		<tr class="odd">
+			<td class="col-md-2">Notice Effective Date/Time:</td>
+			<td>
+				Jun 16 2026  9:00AM
+			</td>
+		</tr>
+		<tr class="even">
+			<td class="col-md-2">Notice End Date/Time:</td>
+			<td>
+				Jun 30 2026  8:59AM
+			</td>
+		</tr>
+		
+			<tr class="odd">
+				<td class="col-md-2">
+					<p>Notice Text:</p>
+					<p>Nominated Volume Affected</p>
+				</td>
+				<td>
+					<p><span ,sans-serif;= calibri=>June 11, 2026</span></p><p><br><b>To:</b> All Transwestern Customers<br><br><b>Subject: </b>East Mainline system - Compressor Station maintenance.</p><p class= MsoNormal  auto;=><strong><b><u>This maintenance will affect receipt volumes from the West Texas & Panhandle Laterals flowing west through Station 9 (Roswell, NM).</u></b></strong></p><p><b>Gas Day June 16th thru June 29th, 2026</b></p><p><span calibri;=>Total capacity for Station 9 receipt volumes (West flow) will be reduced from 750,000 MMBtu/d to 650,000 MMBtu/d. </span></p><p><strong>Gas Day June 30th, 2026</strong></p><p>Total capacity for Station 9 receipt volumes (West flow) will increase from 650,000 MMBtu/d to the original capacity of 750,000 MMBtu/d.</p><p><span ,sans-serif;= calibri=><pstyle= rgb(0,= 0,=  2;= text-align:=start;=  0);= font-family:=  times= new=  roman= ;=></pstyle=></span></p><p><span ,sans-serif;= calibri=>Transwestern reserves the right to revise the above listed schedule. Please continue to monitor Transwestern website for updates and schedule changes.</span></p>
+				</td>
+			</tr>
+		
+
+
+		<tr class="even">
+			<td class="col-md-2">Reason:</td>
+			<td>
+				Pipeline Maintenance
+			</td>
+		</tr>	
+		
+			<tr class="odd">
+				<td class="col-md-2">Location:</td>
+				<td>
+					East Mainline System
+				</td>
+			</tr>
+		
+		
+		
+	</tbody>
+
+</table>
+<!-- END: grails-app/views/layouts/table.gsp -->
+<!-- END: grails-app/views/override/ETE/notice/_showBody.gsp -->
+<!-- END: grails-app/views/notice/show.gsp -->
+    </div>
+
+    </div>
+</div>
+<script>
+    function sendEmail() {
+        $.ajax({
+            statusCode: {404: function() {alert( "page not found" )}},
+            method:'POST',
+            data: $( '#emailForm' ).serialize(),
+            url: '/ipost/main/email?asset=TW'
+        })
+            .done(function(data) {
+                jQuery('#modal-email-form').html(data);
+            }).fail(function() {
+            jQuery('#modal-email-form').html(XMLHttpRequest.responseText);
+        }).always(function() {
+            hideProgress('modal-email-form');
+        });
+    }
+    $('.modal-print').click(function(){
+        $(this).parent().nextAll(".modal-body").printArea({mode: "popup", popClose: false});
+    });
+    $('.modal-email').click(function(){
+        $('.modal-email-form').removeClass('hidden');
+        var modalHeader = $(this).parent();
+        $("#modal-note").val(modalHeader.nextAll(".modal-body").html());
+    });
+    $(document).ready( function () {
+        $('a[rel=tooltip]').tooltip({html: true});
+    });
+</script>
+<!-- END: grails-app/views/layouts/modal.gsp -->

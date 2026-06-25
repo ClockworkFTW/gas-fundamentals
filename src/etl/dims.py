@@ -10,11 +10,12 @@ gitignored — they are reference data, unlike the ``data/`` partitions):
 - ``dim_segment``  — schematic edges: ``from_node/to_node, path_kind``.
 
 ``dim_location`` / ``dim_segment`` are the layout/topology tables that drive the
-Deneb schematic. They are **stubbed** (header-only) here: the Transwestern seed
-CSVs that README §2 references do not exist yet. When per-pipeline seeds are
-authored, drop them in ``dim/seeds/<pipeline>_nodes.csv`` /
-``dim/seeds/<pipeline>_segments.csv`` (columns matching ``DIM_LOCATION_COLUMNS`` /
-``DIM_SEGMENT_COLUMNS``) and they will be folded in automatically.
+Deneb schematic. They are folded in from per-pipeline seed CSVs under
+``dim/seeds/<pipeline>_nodes.csv`` / ``dim/seeds/<pipeline>_segments.csv`` (columns
+matching ``DIM_LOCATION_COLUMNS`` / ``DIM_SEGMENT_COLUMNS``). Seeds are authored for
+all seven flow pipelines (pipe_ranger, gtn, el_paso, transwestern, kern_river, nova,
+foothills); see ``dim/seeds/README.md`` for the node/edge convention and join notes.
+Add a pipeline's seeds (or fix one) and they fold in automatically on rebuild.
 
 ``dim_date`` is built in Power BI (Power Query / CALENDAR), not here.
 """

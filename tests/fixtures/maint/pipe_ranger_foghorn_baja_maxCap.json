@@ -1,0 +1,44 @@
+[
+  {
+    "Dates": "June 17 - 25",
+    "bajaKettlemanCapacity": "51.3%",
+    "bajaHinkleyCapacity": "41.0%",
+    "bajaTopockCapacity": "65.6%",
+    "MaintenanceNotes": "<p>Topock Station Maintenance</p>\r\n<p>Hinkley Pipeline Maintenance</p>\r\n<p>L300A Pipeline Maintenance</p>\r\n<p>L300B Pipeline Maintenance</p>\r\n"
+  },
+  {
+    "Dates": "June 26",
+    "bajaKettlemanCapacity": "51.3%",
+    "bajaHinkleyCapacity": "41.0%",
+    "bajaTopockCapacity": "96.4%",
+    "MaintenanceNotes": "<p>Topock Station Maintenance</p>\r\n<p>Hinkley Pipeline Maintenance</p>\r\n<p>L300A Pipeline Maintenance</p>\r\n<p>L300B Pipeline Maintenance</p>\r\n"
+  },
+  {
+    "Dates": "June 27 - 30",
+    "bajaKettlemanCapacity": "51.3%",
+    "bajaHinkleyCapacity": "41.0%",
+    "bajaTopockCapacity": "100.0%",
+    "MaintenanceNotes": "<p>Hinkley Pipeline Maintenance</p>\r\n<p>L300A Pipeline Maintenance</p>\r\n<p>L300B Pipeline Maintenance</p>\r\n"
+  },
+  {
+    "Dates": "July 01 - 10",
+    "bajaKettlemanCapacity": "51.3%",
+    "bajaHinkleyCapacity": "41.0%",
+    "bajaTopockCapacity": "100.0%",
+    "MaintenanceNotes": "<p>Topock Station Maintenance</p>\r\n<p>Hinkley Station Maintenance</p>\r\n<p>L300A Pipeline Maintenance</p>\r\n"
+  },
+  {
+    "Dates": "July 11 - 12",
+    "bajaKettlemanCapacity": "51.3%",
+    "bajaHinkleyCapacity": "76.9%",
+    "bajaTopockCapacity": "100.0%",
+    "MaintenanceNotes": "<p>Hinkley Station Maintenance</p>\r\n<p>L300A Pipeline Maintenance</p>\r\n"
+  },
+  {
+    "Dates": "July 13 - 31",
+    "bajaKettlemanCapacity": "51.3%",
+    "bajaHinkleyCapacity": "65.6%",
+    "bajaTopockCapacity": "100.0%",
+    "MaintenanceNotes": "<p>Hinkley Station Maintenance</p>\r\n<p>L300A Pipeline Maintenance</p>\r\n"
+  }
+]

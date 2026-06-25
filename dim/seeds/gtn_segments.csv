@@ -1,0 +1,6 @@
+pipeline,segment_id,from_node,to_node,path_kind
+gtn,gtn_kingsgate_malin,3498,1820,mainline
+gtn,gtn_stanfield_malin,1388845,1820,supply_lateral
+gtn,gtn_turquoise_malin,1049174,1820,supply_lateral
+gtn,gtn_threemile_malin,21749,1820,supply_lateral
+gtn,gtn_malin_handoff,1820,malin_gtn,handoff

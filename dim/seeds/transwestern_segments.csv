@@ -1,0 +1,8 @@
+pipeline,segment_id,from_node,to_node,path_kind
+transwestern,tw_milagro_topock,56419,56698,supply_lateral
+transwestern,tw_windowrock_topock,500179,56698,supply_lateral
+transwestern,tw_chaco_topock,78423,56698,supply_lateral
+transwestern,tw_rojobanco_topock,79028,56698,supply_lateral
+transwestern,tw_wildcat_topock,100730,56698,supply_lateral
+transwestern,tw_southeddy_topock,79075,56698,supply_lateral
+transwestern,tw_topock_handoff,56698,baja_transw,handoff

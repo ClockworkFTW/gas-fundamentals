@@ -1,0 +1,2 @@
+pipeline,segment_id,from_node,to_node,path_kind
+foothills,fh_abbc_kingsgate,AB/BC,3498,mainline

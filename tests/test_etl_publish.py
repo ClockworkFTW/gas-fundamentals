@@ -36,9 +36,14 @@ def staged(tmp_path):
     gd = "2026-06-22"
     (tmp_path / "data" / "operational").mkdir(parents=True)
     (tmp_path / "data" / "storage").mkdir(parents=True)
+    (tmp_path / "data" / "notices").mkdir(parents=True)
+    (tmp_path / "data" / "maintenance").mkdir(parents=True)
     (tmp_path / "dim").mkdir(parents=True)
     (tmp_path / "data" / "operational" / f"operational_{gd}.csv").write_text("pipeline,gas_day\npipe_ranger,2026-06-22\n", encoding="utf-8")
     (tmp_path / "data" / "storage" / f"storage_{gd}.csv").write_text("region,gas_day\nPG&E System,2026-06-22\n", encoding="utf-8")
+    # Maintenance/notices are current-snapshot facts (not gas-day partitioned).
+    (tmp_path / "data" / "notices" / "notices_current.csv").write_text("source,notice_id\ngtn,1585\n", encoding="utf-8")
+    (tmp_path / "data" / "maintenance" / "maintenance_current.csv").write_text("source,maintenance_id\nnova,nova:1\n", encoding="utf-8")
     for name in ("dim_pipeline", "dim_cycle", "dim_location", "dim_segment"):
         (tmp_path / "dim" / f"{name}.csv").write_text("col\n", encoding="utf-8")
     return tmp_path, gd
@@ -71,6 +76,12 @@ def test_build_payload_routes_folder_and_carries_csv(staged):
     dim_payload = publish.build_payload("dim_pipeline", root / "dim" / "dim_pipeline.csv", gd)
     assert dim_payload["folder"] == "dim"
 
+    # Current-snapshot facts route to their own per-fact folders.
+    notices_payload = publish.build_payload("fact_notices", root / "data" / "notices" / "notices_current.csv", gd)
+    assert notices_payload["folder"] == "notices"
+    maint_payload = publish.build_payload("fact_maintenance", root / "data" / "maintenance" / "maintenance_current.csv", gd)
+    assert maint_payload["folder"] == "maintenance"
+
 
 def test_publish_posts_all_files_with_secret_header(staged):
     root, gd = staged
@@ -79,14 +90,15 @@ def test_publish_posts_all_files_with_secret_header(staged):
     results = publish.publish_gas_day(
         gd, data_root=root / "data", dim_dir=root / "dim", session=session, config=cfg
     )
-    assert len(results) == 6 and all(r["ok"] for r in results)
-    # Six POSTs, each with the shared-secret header and the right URL.
-    assert len(session.calls) == 6
+    assert len(results) == 8 and all(r["ok"] for r in results)
+    # Eight POSTs, each with the shared-secret header and the right URL.
+    assert len(session.calls) == 8
     for call in session.calls:
         assert call["url"] == "https://pa.example/trigger"
         assert call["headers"]["X-Shared-Secret"] == "s3cret"
     kinds = {c["json"]["kind"] for c in session.calls}
-    assert kinds == {"fact_operational", "fact_storage", "dim_pipeline", "dim_cycle", "dim_location", "dim_segment"}
+    assert kinds == {"fact_operational", "fact_storage", "fact_notices", "fact_maintenance",
+                     "dim_pipeline", "dim_cycle", "dim_location", "dim_segment"}
 
 
 def test_publish_skips_missing_partition(staged):
@@ -97,7 +109,7 @@ def test_publish_skips_missing_partition(staged):
     results = publish.publish_gas_day(gd, data_root=root / "data", dim_dir=root / "dim", session=session, config=cfg)
     storage_res = next(r for r in results if r["kind"] == "fact_storage")
     assert storage_res["skipped"] is True and storage_res["ok"] is False
-    assert len(session.calls) == 5  # storage not posted
+    assert len(session.calls) == 7  # 8 known files, storage not posted
 
 
 def test_publish_dry_run_builds_without_posting(staged):

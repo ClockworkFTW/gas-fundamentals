@@ -76,6 +76,10 @@ def partition_files(
     return [
         ("fact_operational", data_root / "operational" / f"operational_{gas_day}.csv"),
         ("fact_storage", data_root / "storage" / f"storage_{gas_day}.csv"),
+        # Maintenance/notices are current-snapshot facts (not gas-day partitioned);
+        # overwritten each run, skipped here if not built this run.
+        ("fact_notices", data_root / "notices" / "notices_current.csv"),
+        ("fact_maintenance", data_root / "maintenance" / "maintenance_current.csv"),
         ("dim_pipeline", dim_dir / "dim_pipeline.csv"),
         ("dim_cycle", dim_dir / "dim_cycle.csv"),
         ("dim_location", dim_dir / "dim_location.csv"),
@@ -93,6 +97,8 @@ def build_payload(kind: str, path: pathlib.Path, gas_day: str) -> dict[str, Any]
     folder = {
         "fact_operational": "operational",
         "fact_storage": "storage",
+        "fact_notices": "notices",
+        "fact_maintenance": "maintenance",
     }.get(kind, "dim")
     return {
         "kind": kind,

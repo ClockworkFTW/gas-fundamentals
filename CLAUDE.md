@@ -48,9 +48,22 @@ The README §9 refactor is **done**. The repo is now the operational-data engine
 - `src/etl/` — `load` (lineage reader), `facts` (writes `fact_operational` +
   `fact_storage` partitions with pre-computed cols), `dims` (writes
   `dim_pipeline`/`dim_cycle` + stub `dim_location`/`dim_segment`), `publish`
-  (POSTs partitions + dims to Power Automate, shared-secret header).
-- `src/__main__.py` — `python -m src --gas-day <ISO> [--cycle] [--pull] [--publish]`
-  runs `pull → etl → publish`.
+  (POSTs partitions + dims to Power Automate, shared-secret header), `maintenance`
+  (+ the `maintenance_sources/` package, one module per pipe) — builds the two
+  current-snapshot facts below.
+- **Maintenance/notices facts** (`MaintenanceImpact`/`NoticeEvent` shapes in
+  `ebb/schema.py`): `data/maintenance/maintenance_current.csv` (the planned-
+  maintenance/capacity-constraint timeline) + `data/notices/notices_current.csv`
+  (the OFO/EFO + maintenance + critical feed). **Current-snapshot grain**
+  (overwritten each run, not gas-day partitioned). Capacity normalized to Dth/d
+  (`pct_of_capacity` = the unit-free cross-pipe comparable); `capacity_basis` flags
+  remaining-vs-reduction. Per-pipe access lives in `maintenance_sources/<pipe>.py`
+  (clients used as fetchers only; **Pipe Ranger maintenance = `POST /bin/pipeline/
+  foghorn`**, see the foghorn memory). Design + the recon it came from:
+  `exploration/FACT_NOTICES_DESIGN.md` + `exploration/maintenance/INVENTORY.md`.
+- `src/__main__.py` — `python -m src --gas-day <ISO> [--cycle] [--pull]
+  [--maintenance] [--publish]` runs `pull → etl (+maintenance) → publish`.
+  `--maintenance` is opt-in (network-bound, forward-looking snapshot).
 - `dim/` — committed dimension CSVs (not gitignored). `dim/seeds/<pipeline>_nodes.csv`
   / `_segments.csv` are folded into `dim_location`/`dim_segment` when authored;
   none exist yet, so those two dims are header-only stubs.

@@ -56,6 +56,78 @@ class Notice:
         return dataclasses.asdict(self)
 
 
+@dataclasses.dataclass
+class NoticeEvent:
+    """One notice (event/header grain) -> ``fact_notices`` (the severity feed).
+
+    Covers every notice category across the pipes (OFO/EFO, critical, maintenance,
+    planned outage, capacity constraint, advisory). Supersession is resolved to
+    ``is_current`` in the ETL; ``has_capacity_impact`` links to ``MaintenanceImpact``
+    rows. See exploration/FACT_NOTICES_DESIGN.md.
+    """
+    source: str
+    notice_id: str
+    notice_type: str            # normalized: maintenance|planned_outage|critical|capacity_constraint|ofo|efo|advisory|other
+    notice_type_raw: str
+    severity: str               # info|low|medium|high|critical (pre-computed)
+    category: str               # maintenance|capacity|operational|administrative
+    posted_at_utc: Optional[str]
+    effective_start: Optional[str]
+    effective_end: Optional[str]
+    status: Optional[str]       # initiate|supersede|terminate|active
+    prior_notice_id: Optional[str]
+    is_current: bool            # pre-computed: latest non-superseded in its chain
+    has_capacity_impact: bool
+    primary_point_id: Optional[str]
+    affects_pge: bool
+    headline: str
+    body: str
+    url: str
+    gas_day: str                # OFO/EFO = order gas day; ranged notices = effective_start
+    pulled_at_utc: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return dataclasses.asdict(self)
+
+
+@dataclasses.dataclass
+class MaintenanceImpact:
+    """One (maintenance item x affected location x date-span) -> ``fact_maintenance``.
+
+    The maintenance-constraint timeline. Capacity is normalized to Dth/d with the
+    original preserved; ``pct_of_capacity`` is the unit-free cross-pipe comparable.
+    ``capacity_basis`` flags whether the source natively reports remaining capacity,
+    the reduction amount, or a % cut. ``join_kind`` is honest about how (if at all)
+    the row reaches ``fact_operational.point_id`` / the schematic.
+    """
+    source: str
+    maintenance_id: str
+    notice_id: Optional[str]            # FK -> NoticeEvent; None for foghorn / NGTL outages
+    point_id: Optional[str]            # join -> dim_location / fact_operational.point_id
+    segment_or_gate: Optional[str]
+    affected_label: str
+    join_kind: str                     # point_id|gate_code|segment_name|path|text_label
+    date_start: str
+    date_end: Optional[str]
+    capacity_basis: str                # remaining|reduction|pct_cut
+    capacity_remaining_dthd: Optional[float]
+    reduction_dthd: Optional[float]
+    base_capacity_dthd: Optional[float]
+    pct_of_capacity: Optional[float]
+    pct_firm_cut: Optional[float]
+    reduction_planned_dthd: Optional[float]   # EPNG PLM split
+    reduction_fm_dthd: Optional[float]        # EPNG FMJ split
+    original_value: Optional[float]
+    original_units: str                # MMcf/d | Dth/d | 10^3m^3/d | MMBtu/d
+    restriction_type: Optional[str]
+    work_description: str
+    is_unplanned: bool
+    pulled_at_utc: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return dataclasses.asdict(self)
+
+
 # --------------------------------------------------------------------------- #
 # Shared helpers
 # --------------------------------------------------------------------------- #

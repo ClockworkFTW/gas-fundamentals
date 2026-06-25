@@ -1,12 +1,20 @@
 """Offline tests for the dimension builder (src/etl/dims.py).
 
 Writes the four dim CSVs to tmp_path and asserts the authored dim_pipeline /
-dim_cycle content, the stub-only (header-only) dim_location / dim_segment, and the
-seed-ingestion hook for when per-pipeline topology CSVs are authored.
+dim_cycle content, the empty-without-seeds behaviour of dim_location / dim_segment,
+the seed-ingestion hook, and the committed per-pipeline topology seeds under
+``dim/seeds/`` (the schematic node/edge tables).
 """
+import pathlib
+
 import pandas as pd
 
 from etl import dims
+
+# The seven flow pipelines whose topology is seeded under dim/seeds/ (eia is a
+# macro-storage context source with no schematic nodes; ruby is inactive).
+SEEDED_PIPELINES = {"pipe_ranger", "gtn", "el_paso", "transwestern",
+                    "kern_river", "nova", "foothills"}
 
 
 def test_build_dims_writes_four_csvs(tmp_path):
@@ -35,7 +43,9 @@ def test_dim_cycle_ordering(tmp_path):
     assert ordered == ["timely", "evening", "id1", "id2", "id3", "final"]
 
 
-def test_dim_location_segment_are_header_only_stubs(tmp_path):
+def test_dim_location_segment_empty_without_seeds(tmp_path):
+    # With no dim/seeds/ directory, location/segment are header-only (still a
+    # stable header for Power BI's folder connector to append against).
     out = dims.build_dims(tmp_path, write=True)
     loc = pd.read_csv(tmp_path / "dim_location.csv")
     seg = pd.read_csv(tmp_path / "dim_segment.csv")
@@ -59,3 +69,46 @@ def test_seed_hook_folds_in_authored_topology(tmp_path):
     assert loc.iloc[0]["point_id"] == 56698
     assert loc.iloc[0]["label"] == "Topock (PG&E)"
     assert list(loc.columns) == dims.DIM_LOCATION_COLUMNS
+
+
+def test_committed_topology_seeds_are_coherent():
+    """Guard the checked-in dim/seeds/ topology that drives the Deneb schematic.
+
+    Asserts structural invariants (not exact coordinates, so layout can be tuned):
+    every flow pipeline has nodes, key fact-join point_ids are present, segment
+    endpoints all resolve to a node, and the literal-text point_ids survive
+    byte-exact (any normalization would break the Power BI join).
+    """
+    repo = pathlib.Path(__file__).resolve().parents[1]
+    out = dims.build_dims(repo / "dim", write=False)
+    loc = out["dim_location"]["rows"]
+    seg = out["dim_segment"]["rows"]
+    assert loc and seg, "committed seeds should fold into non-empty location/segment"
+
+    # Every seeded flow pipeline contributes nodes.
+    assert {n["pipeline"] for n in loc} == SEEDED_PIPELINES
+
+    # Spot-check the load-bearing fact-join keys (point_id == fact_operational.point_id).
+    keys = {(n["pipeline"], str(n["point_id"])) for n in loc}
+    for must in [
+        ("pipe_ranger", "malin_gtn"), ("pipe_ranger", "baja_elpaso"),
+        ("pipe_ranger", "baja_daggett"), ("gtn", "1820"), ("gtn", "3498"),
+        ("transwestern", "56698"), ("kern_river", "68522"),
+        ("nova", "AB/BC"), ("foothills", "AB/BC"),
+    ]:
+        assert must in keys, f"missing schematic join key {must}"
+
+    # Literal-text ids must be preserved exactly (no trim/case/slash mangling).
+    labels = {str(n["point_id"]) for n in loc}
+    for literal in ("AB/BC", "NGTL-Field Receipts", "Mcneil Border Flow", "Total Receipts"):
+        assert literal in labels, f"text point_id {literal!r} was altered or dropped"
+
+    # The synthetic Citygate hub intentionally joins to nothing.
+    hub = [n for n in loc if n["type"] == "hub"]
+    assert len(hub) == 1 and hub[0]["point_id"] == "cgt_citygate"
+
+    # Every segment endpoint references a real node id.
+    node_ids = {str(n["point_id"]) for n in loc}
+    for s in seg:
+        assert str(s["from_node"]) in node_ids, f"{s['segment_id']} from_node dangling"
+        assert str(s["to_node"]) in node_ids, f"{s['segment_id']} to_node dangling"

@@ -43,7 +43,7 @@ _SRC = pathlib.Path(__file__).resolve().parent
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
-from etl import facts, dims, publish  # noqa: E402
+from etl import facts, dims, maintenance, publish  # noqa: E402
 from etl.load import FLOW_SOURCES  # noqa: E402
 
 log = logging.getLogger("gas_fundamentals")
@@ -122,6 +122,7 @@ def run(
     cycle: Optional[str] = None,
     do_pull: bool = False,
     do_publish: bool = False,
+    do_maintenance: bool = False,
     sources: Optional[list[str]] = None,
     write: bool = True,
     dry_run: bool = False,
@@ -135,6 +136,21 @@ def run(
 
     summary["facts"] = facts.build_facts(gas_day, data_root=data_root, cycle=cycle, write=write)
     summary["dims"] = dims.build_dims(dim_dir, write=write)
+
+    # Maintenance/notices snapshot is its own forward-looking feed (network-bound);
+    # opt-in so a plain ETL of on-disk lineage stays offline. Pass the just-built
+    # operational design capacities so point_id-joined impacts (e.g. GTN LOC#) get
+    # base capacity + pct_of_capacity backfilled.
+    if do_maintenance:
+        design_by_point = {
+            (r["pipeline"], str(r["point_id"])): r["design_capacity"]
+            for r in summary["facts"]["operational"]
+            if r.get("point_id") and r.get("design_capacity")
+        }
+        summary["maintenance"] = maintenance.build_maintenance(
+            gas_day, data_root=data_root, sources=sources,
+            design_by_point=design_by_point, write=write,
+        )
 
     if do_publish:
         summary["publish"] = publish.publish_gas_day(
@@ -151,6 +167,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
     parser.add_argument("--dim-dir", default="dim", help="Directory of the committed dimension CSVs.")
     parser.add_argument("--pull", action="store_true", help="Refresh source lineage via the EBB clients first (network).")
     parser.add_argument("--sources", nargs="*", default=None, help="Limit the pull to these sources (e.g. pipe_ranger eia).")
+    parser.add_argument("--maintenance", action="store_true", help="Also build the maintenance + notices snapshot facts (network).")
     parser.add_argument("--publish", action="store_true", help="POST partitions + dims to Power Automate.")
     parser.add_argument("--dry-run", action="store_true", help="With --publish, build payloads but do not POST.")
     parser.add_argument("--no-write", action="store_true", help="Do not write partition/dim files.")
@@ -167,6 +184,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         cycle=args.cycle,
         do_pull=args.pull,
         do_publish=args.publish,
+        do_maintenance=args.maintenance,
         sources=args.sources,
         write=not args.no_write,
         dry_run=args.dry_run,
@@ -178,6 +196,12 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         f"fact_storage {len(f['storage'])} rows | sources {f['sources_loaded']} "
         f"(missing {f['sources_missing']})"
     )
+    if args.maintenance:
+        m = summary["maintenance"]
+        print(
+            f"fact_notices {len(m['notices'])} rows, fact_maintenance {len(m['impacts'])} rows | "
+            f"maint sources ok {m['sources_ok']} (failed {list(m['sources_failed'])})"
+        )
     if args.publish:
         ok = sum(1 for r in summary["publish"] if r["ok"])
         print(f"published {ok}/{len(summary['publish'])} files")

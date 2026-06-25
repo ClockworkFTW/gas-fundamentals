@@ -1,0 +1,37 @@
+[
+  {
+    "Dates": "June 28",
+    "Capacity": 1960.0,
+    "MaintenanceNotes": "<p>Burney Station Maintenance</p>\r\n"
+  },
+  {
+    "Dates": "June 29 - 30",
+    "Capacity": 1760.0,
+    "MaintenanceNotes": "<p>Burney Station Maintenance</p>\r\n"
+  },
+  {
+    "Dates": "July 01",
+    "Capacity": 1880.0,
+    "MaintenanceNotes": "<p>Burney Station Maintenance</p>\r\n"
+  },
+  {
+    "Dates": "July 20",
+    "Capacity": 1910.0,
+    "MaintenanceNotes": "<p>Burney Station Maintenance</p>\r\n"
+  },
+  {
+    "Dates": "July 21",
+    "Capacity": 1840.0,
+    "MaintenanceNotes": "<p>Burney Station Maintenance</p>\r\n<p>Gerber Station Maintenance</p>\r\n"
+  },
+  {
+    "Dates": "July 22",
+    "Capacity": 1910.0,
+    "MaintenanceNotes": "<p>Delevan Station Maintenance</p>\r\n<p>Gerber Station Maintenance</p>\r\n"
+  },
+  {
+    "Dates": "July 23",
+    "Capacity": 1960.0,
+    "MaintenanceNotes": "<p>Delevan Station Maintenance</p>\r\n"
+  }
+]

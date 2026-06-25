@@ -1,0 +1,159 @@
+{
+  "data": [
+    {
+      "NoticeSearchFilterViewModel": null,
+      "Id": 19157,
+      "IsActual": false,
+      "TspName": "Gas Transmission Northwest LLC",
+      "Tsp": "006912885",
+      "NoticeId": 1585,
+      "PostingDate": "06/21/2026",
+      "PostingTime": "18:40",
+      "CriticalNoticeIndicator": false,
+      "Critical": "No",
+      "NoticeIndicator": "Critical",
+      "NoticeType": "Maint",
+      "NoticeStatus": "Supersede",
+      "PriorNoticeID": 1584,
+      "Subject": "UPDATED: CAPACITY REDUCTION:  GTN – Station 9 CFTP (Updated: 6/21/26)",
+      "Text": "Since the last posting, GTN has extended the A Iine Ione to Bend ILI maintenance through 6/26 (previously 6/22) and updated the capacity impact at Station 9 CFTP (LOC #18480). As a result, capacity will be reduced as follows:\r\n \r\n6/19 – 6/26 - Available Capacity 1,650 MMcf/d\r\n \r\nPlease refer to the EBB for any additional capacity impacts.\r\n \r\nGTN anticipates this posting may result in Firm Primary, Firm Secondary and Interruptible curtailments. The Reservation Charge Crediting Mechanism of Section 5.1.3.10 shall apply to this outage.\r\n \r\nPlease direct any questions to your Account Coordinator, Customer Service Representative, or the Nominations and Scheduling hotline @ 888-750-6275. \r\n\r\n \r\n",
+      "EffDate": "06/21/2026",
+      "EffTime": "18:40",
+      "EndDate": "06/27/2026",
+      "EndTime": "08:59",
+      "ResponseDate": "",
+      "ResponseTime": "",
+      "RequiredResponseType": "No response required",
+      "RedirectUrl": "https%3a%2f%2fwww.tcplus.com%2fGTN%2fNotice%23filter.SelectedIndicator%3d%26filter.SelectedStatus%3d%26filter.SelectedTypeIds%3d%26filter.EffDate%3d04%252F15%252F2026%26filter.EndDate%3d08%252F15%252F2026%26page%3d1%26sort%3dPostingDate%26sort_direction%3dDescending",
+      "ExistingAttachments": {
+        "Attachments": []
+      },
+      "HasAttachments": false,
+      "ReturnLink": null
+    },
+    {
+      "NoticeSearchFilterViewModel": null,
+      "Id": 19154,
+      "IsActual": false,
+      "TspName": "Gas Transmission Northwest LLC",
+      "Tsp": "006912885",
+      "NoticeId": 1582,
+      "PostingDate": "06/18/2026",
+      "PostingTime": "06:00",
+      "CriticalNoticeIndicator": false,
+      "Critical": "No",
+      "NoticeIndicator": "Non-Critical",
+      "NoticeType": "Rates-Chrgs",
+      "NoticeStatus": "Initiate",
+      "PriorNoticeID": null,
+      "Subject": "JULY 2026 - GTN Fuel and Line Loss Percentage",
+      "Text": "Pursuant to Gas Transmission Northwest's (GTN) Tariffed Fuel Adjustments Provision, for the period of July 01, 2026 through July 31, 2026, a fuel usage rate of 0.0034% per Dth/mile will be in effect.  This percentage is inclusive of GTN's current fuel and line loss surcharge of 0.00000% per Dth per pipeline mile, which is in effect through December 31, 2026, in accordance with GTN's approved tariff provision, \"Adjustment Mechanism for Fuel, Line Loss, and Other Unaccounted for Gas.\"\r\n\r\n \r\n\r\nThis posting is accompanied by the following attachments:\r\n\r\n\r\n\tGTN System Fuel Rates\r\n\tGTN Fuel and Line Loss Surcharge\r\n\tHistorical GTN Fuel Rates (2012 to Present)\r\n\r\n\r\n \r\n\r\nIf you have any questions, please contact Commercial Services at 888.750.6275\r\n",
+      "EffDate": "06/18/2026",
+      "EffTime": "06:00",
+      "EndDate": "07/31/2026",
+      "EndTime": "23:59",
+      "ResponseDate": "",
+      "ResponseTime": "",
+      "RequiredResponseType": "No response required",
+      "RedirectUrl": "https%3a%2f%2fwww.tcplus.com%2fGTN%2fNotice%23filter.SelectedIndicator%3d%26filter.SelectedStatus%3d%26filter.SelectedTypeIds%3d%26filter.EffDate%3d04%252F15%252F2026%26filter.EndDate%3d08%252F15%252F2026%26page%3d1%26sort%3dPostingDate%26sort_direction%3dDescending",
+      "ExistingAttachments": {
+        "Attachments": [
+          {
+            "Id": 2017,
+            "FileData": [],
+            "FileType": "application/pdf",
+            "FileName": "GTN Fuel 07.2026.pdf"
+          },
+          {
+            "Id": 2018,
+            "FileData": [],
+            "FileType": "application/pdf",
+            "FileName": "Fuel and Line Loss Surcharge 2026.pdf"
+          },
+          {
+            "Id": 2019,
+            "FileData": [],
+            "FileType": "application/pdf",
+            "FileName": "GTN Historical Fuel Tracker 07.2026.pdf"
+          }
+        ]
+      },
+      "HasAttachments": true,
+      "ReturnLink": null
+    },
+    {
+      "NoticeSearchFilterViewModel": null,
+      "Id": 19148,
+      "IsActual": false,
+      "TspName": "Gas Transmission Northwest LLC",
+      "Tsp": "006912885",
+      "NoticeId": 1583,
+      "PostingDate": "06/16/2026",
+      "PostingTime": "10:10",
+      "CriticalNoticeIndicator": false,
+      "Critical": "No",
+      "NoticeIndicator": "Critical",
+      "NoticeType": "Maint",
+      "NoticeStatus": "Supersede",
+      "PriorNoticeID": 1579,
+      "Subject": "UPDATED: CAPACITY REDUCTION: GTN – Rosalia Compressor Station (Updated: 6/16/26)",
+      "Text": "Since the last posting, GTN has extended the unplanned maintenance at Rosalia Compressor Station for Units A & B. As a result, capacity will be reduced as follows:\r\n\r\n6/12 – 7/2 (previously 6/21) Station 6 CFTP (LOC #954690) – Available Capacity 2,500 MMcf/d.\r\n\r\nPlease refer to the EBB for any additional capacity impacts.\r\n\r\nGTN anticipates this posting may result in Firm Primary, Firm Secondary and Interruptible curtailments. The Reservation Charge Crediting Mechanism of Section 5.1.3.10 shall apply to this outage.\r\n\r\nPlease direct any questions to your Account Coordinator, Customer Service Representative, or the Nominations and Scheduling hotline @ 888-750-6275. \r\n",
+      "EffDate": "06/16/2026",
+      "EffTime": "10:10",
+      "EndDate": "07/03/2026",
+      "EndTime": "08:59",
+      "ResponseDate": "",
+      "ResponseTime": "",
+      "RequiredResponseType": "No response required",
+      "RedirectUrl": "https%3a%2f%2fwww.tcplus.com%2fGTN%2fNotice%23filter.SelectedIndicator%3d%26filter.SelectedStatus%3d%26filter.SelectedTypeIds%3d%26filter.EffDate%3d04%252F15%252F2026%26filter.EndDate%3d08%252F15%252F2026%26page%3d1%26sort%3dPostingDate%26sort_direction%3dDescending",
+      "ExistingAttachments": {
+        "Attachments": []
+      },
+      "HasAttachments": false,
+      "ReturnLink": null
+    },
+    {
+      "NoticeSearchFilterViewModel": null,
+      "Id": 19134,
+      "IsActual": false,
+      "TspName": "Gas Transmission Northwest LLC",
+      "Tsp": "006912885",
+      "NoticeId": 1577,
+      "PostingDate": "06/02/2026",
+      "PostingTime": "07:50",
+      "CriticalNoticeIndicator": false,
+      "Critical": "No",
+      "NoticeIndicator": "Planned Service Outage",
+      "NoticeType": "Plnd Outage",
+      "NoticeStatus": "Supersede",
+      "PriorNoticeID": 1572,
+      "Subject": "MAINTENANCE SCHEDULE for Gas Transmission Northwest (Posted: 6/2/26) ",
+      "Text": "Gas Transmission Northwest Maintenance Schedule has been updated.  \r\n\r\n \r\n\r\nPlease refer to the maintenance schedule for the projected capacity impacts.  Updated items are as follows:  \r\n\r\n \r\n\r\n• Added: 6/2 – 6/16 – Unplanned Rosalia Compressor Station Maintenance\r\n\r\n• Moved: 7/17 – 8/1 – Rosalia Launcher Installation\r\n\r\n• Updated: 7/17 – 8/1 – Chemult Launcher Installation\r\n\r\n• Updated: 8/3 – 8/20 – Starbuck Outage and Bypass Installation\r\n\r\n• Updated: 8/3 – 8/20 – Bonanza Bypass and Receiver Installation\r\n\r\n \r\n\r\nPlease note that the information posted is proposed and subject to change.  \r\n\r\n \r\n\r\nPlease direct any questions to your Account Coordinator, Customer Service Representative, or the Nominations and Scheduling hotline @ 888-750-6275 \r\n",
+      "EffDate": "06/02/2026",
+      "EffTime": "07:50",
+      "EndDate": "11/01/2026",
+      "EndTime": "08:59",
+      "ResponseDate": "",
+      "ResponseTime": "",
+      "RequiredResponseType": "No response required",
+      "RedirectUrl": "https%3a%2f%2fwww.tcplus.com%2fGTN%2fNotice%23filter.SelectedIndicator%3d%26filter.SelectedStatus%3d%26filter.SelectedTypeIds%3d%26filter.EffDate%3d04%252F15%252F2026%26filter.EndDate%3d08%252F15%252F2026%26page%3d1%26sort%3dPostingDate%26sort_direction%3dDescending",
+      "ExistingAttachments": {
+        "Attachments": [
+          {
+            "Id": 2013,
+            "FileData": [],
+            "FileType": "application/pdf",
+            "FileName": "GTN Planned Maintenance Schedule 20260602.pdf"
+          }
+        ]
+      },
+      "HasAttachments": true,
+      "ReturnLink": null
+    }
+  ],
+  "page": 1,
+  "total": 4,
+  "page_size": 4,
+  "ErrorDescription": null,
+  "hasTrueUpRan": false
+}

@@ -1,0 +1,7 @@
+pipeline,point_id,x,y,type,label,zone
+el_paso,48164,6,8,supply,Ramsey North,Permian
+el_paso,301839,6,14,supply,San Juan Complex,San Juan
+el_paso,50498,10,10,supply,Salt Creek,Permian
+el_paso,49444,10,16,supply,Pelican Springs,Permian
+el_paso,48862,6,20,supply,Bounds,Permian
+el_paso,54856,10,22,supply,Peregrine (Waha),West Texas

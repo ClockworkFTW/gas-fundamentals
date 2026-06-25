@@ -1,0 +1,4 @@
+pipeline,point_id,x,y,type,label,zone
+foothills,AB/BC,24,86,handoff,Foothills BC (AB/BC to Kingsgate),Kingsgate
+foothills,Empress Border Flow,18,97,border,Empress (east export),Empress
+foothills,Mcneil Border Flow,22,99,border,McNeill (east export),McNeill

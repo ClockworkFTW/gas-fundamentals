@@ -1,0 +1,9 @@
+pipeline,segment_id,from_node,to_node,path_kind
+kern_river,krgt_muddycreek_daggett,33426,68522,supply_lateral
+kern_river,krgt_pioneer_daggett,378891,68522,supply_lateral
+kern_river,krgt_goshen_daggett,301571,68522,supply_lateral
+kern_river,krgt_hamsfork_daggett,487755,68522,supply_lateral
+kern_river,krgt_roberson_daggett,361987,68522,supply_lateral
+kern_river,krgt_opal_daggett,39298,68522,supply_lateral
+kern_river,krgt_daggett_handoff,68522,baja_daggett,handoff
+kern_river,krgt_fremont_handoff,345606,baja_daggett,handoff

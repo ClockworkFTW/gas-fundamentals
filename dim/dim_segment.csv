@@ -1,1 +1,45 @@
 pipeline,segment_id,from_node,to_node,path_kind
+el_paso,elp_ramsey_topock,48164,baja_elpaso,supply_lateral
+el_paso,elp_sanjuan_topock,301839,baja_elpaso,supply_lateral
+el_paso,elp_saltcreek_topock,50498,baja_elpaso,supply_lateral
+el_paso,elp_pelican_topock,49444,baja_elpaso,supply_lateral
+el_paso,elp_bounds_topock,48862,baja_elpaso,supply_lateral
+el_paso,elp_peregrine_topock,54856,baja_elpaso,supply_lateral
+foothills,fh_abbc_kingsgate,AB/BC,3498,mainline
+gtn,gtn_kingsgate_malin,3498,1820,mainline
+gtn,gtn_stanfield_malin,1388845,1820,supply_lateral
+gtn,gtn_turquoise_malin,1049174,1820,supply_lateral
+gtn,gtn_threemile_malin,21749,1820,supply_lateral
+gtn,gtn_malin_handoff,1820,malin_gtn,handoff
+kern_river,krgt_muddycreek_daggett,33426,68522,supply_lateral
+kern_river,krgt_pioneer_daggett,378891,68522,supply_lateral
+kern_river,krgt_goshen_daggett,301571,68522,supply_lateral
+kern_river,krgt_hamsfork_daggett,487755,68522,supply_lateral
+kern_river,krgt_roberson_daggett,361987,68522,supply_lateral
+kern_river,krgt_opal_daggett,39298,68522,supply_lateral
+kern_river,krgt_daggett_handoff,68522,baja_daggett,handoff
+kern_river,krgt_fremont_handoff,345606,baja_daggett,handoff
+nova,nova_total_abbc,Total Receipts,AB/BC,mainline
+nova,nova_field_abbc,NGTL-Field Receipts,AB/BC,supply_lateral
+nova,nova_usjr_abbc,USJR,AB/BC,supply_lateral
+nova,nova_groundbirch_abbc,Groundbirch East Receipt,AB/BC,supply_lateral
+nova,nova_gordondale_abbc,Gordondale Receipt,AB/BC,supply_lateral
+pipe_ranger,pr_malin_cgt,malin_gtn,cgt_citygate,backbone
+pipe_ranger,pr_ruby_cgt,onyx_ruby,cgt_citygate,backbone
+pipe_ranger,pr_elpaso_cgt,baja_elpaso,cgt_citygate,backbone
+pipe_ranger,pr_transw_cgt,baja_transw,cgt_citygate,backbone
+pipe_ranger,pr_daggett_cgt,baja_daggett,cgt_citygate,backbone
+pipe_ranger,pr_cgt_core,cgt_citygate,Core,demand
+pipe_ranger,pr_cgt_sysdem,cgt_citygate,System_Demand,demand
+pipe_ranger,pr_supply_cgt,Supply_Sys,cgt_citygate,supply
+pipe_ranger,pr_cgt_wildgoose,cgt_citygate,WG_Net_Inj,storage
+pipe_ranger,pr_cgt_lodi,cgt_citygate,Lodi_Net_Inj,storage
+pipe_ranger,pr_cgt_centralvalley,cgt_citygate,CVGS_Inj_Phys,storage
+pipe_ranger,pr_cgt_gillranch,cgt_citygate,GRS_LLC_Inj,storage
+transwestern,tw_milagro_topock,56419,56698,supply_lateral
+transwestern,tw_windowrock_topock,500179,56698,supply_lateral
+transwestern,tw_chaco_topock,78423,56698,supply_lateral
+transwestern,tw_rojobanco_topock,79028,56698,supply_lateral
+transwestern,tw_wildcat_topock,100730,56698,supply_lateral
+transwestern,tw_southeddy_topock,79075,56698,supply_lateral
+transwestern,tw_topock_handoff,56698,baja_transw,handoff
