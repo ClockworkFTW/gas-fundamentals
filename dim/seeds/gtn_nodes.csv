@@ -1,6 +1,3 @@
 pipeline,point_id,x,y,type,label,zone
-gtn,3498,30,84,border,Kingsgate,Kingsgate
-gtn,1388845,34,72,supply,Stanfield,Stanfield
-gtn,1049174,34,68,supply,Turquoise Flats,Turquoise Flats
-gtn,21749,34,64,supply,Threemile Rd Dairy,Oregon/WA
-gtn,1820,44,82,handoff,Malin (GTN delivery),Malin
+gtn,3498,22,86,border,Kingsgate,Kingsgate
+gtn,1820,38,84,handoff,Malin - GTN,Malin

@@ -1,14 +1,13 @@
 pipeline,point_id,x,y,type,label,zone
-pipe_ranger,malin_gtn,52,80,border,Malin (GTN),Malin
-pipe_ranger,onyx_ruby,52,88,border,Malin (Ruby),Malin
-pipe_ranger,baja_elpaso,54,22,border,Topock (El Paso),Topock
-pipe_ranger,baja_transw,54,14,border,Topock (Transwestern),Topock
-pipe_ranger,baja_daggett,56,40,border,Daggett (Kern River),Daggett
-pipe_ranger,cgt_citygate,70,52,hub,PG&E Citygate,Citygate
-pipe_ranger,Supply_Sys,64,64,balance,System Supply,Citygate
+pipe_ranger,malin_gtn,50,82,border,Malin - PG&E,Malin
+pipe_ranger,onyx_ruby,44,92,border,Malin - Ruby,Malin
+pipe_ranger,baja_transw,48,14,border,Topock - PG&E (TW),Topock
+pipe_ranger,baja_elpaso,48,24,border,Topock - PG&E (El Paso),Topock
+pipe_ranger,baja_daggett,50,38,border,Daggett - PG&E,Daggett
+pipe_ranger,cgt_citygate,68,52,hub,PG&E Citygate,Citygate
 pipe_ranger,Core,92,58,demand,Core Demand,Citygate
-pipe_ranger,System_Demand,94,46,demand,System Demand,Citygate
-pipe_ranger,WG_Net_Inj,74,72,storage,Wild Goose,Sacramento Valley
-pipe_ranger,Lodi_Net_Inj,82,70,storage,Lodi,San Joaquin
+pipe_ranger,System_Demand,92,46,demand,System Demand,Citygate
+pipe_ranger,WG_Net_Inj,72,70,storage,Wild Goose,Sacramento Valley
+pipe_ranger,Lodi_Net_Inj,82,72,storage,Lodi,San Joaquin
 pipe_ranger,CVGS_Inj_Phys,78,64,storage,Central Valley,Central Valley
 pipe_ranger,GRS_LLC_Inj,86,66,storage,Gill Ranch,San Joaquin

@@ -1,7 +1,0 @@
-pipeline,segment_id,from_node,to_node,path_kind
-el_paso,elp_ramsey_topock,48164,baja_elpaso,supply_lateral
-el_paso,elp_sanjuan_topock,301839,baja_elpaso,supply_lateral
-el_paso,elp_saltcreek_topock,50498,baja_elpaso,supply_lateral
-el_paso,elp_pelican_topock,49444,baja_elpaso,supply_lateral
-el_paso,elp_bounds_topock,48862,baja_elpaso,supply_lateral
-el_paso,elp_peregrine_topock,54856,baja_elpaso,supply_lateral

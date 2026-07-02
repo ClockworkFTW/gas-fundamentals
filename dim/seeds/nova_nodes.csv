@@ -1,7 +1,0 @@
-pipeline,point_id,x,y,type,label,zone
-nova,Total Receipts,4,92,supply,NGTL Total Receipts,AECO/NIT
-nova,NGTL-Field Receipts,4,87,supply,NGTL Field Receipts,AECO/NIT
-nova,USJR,8,90,supply,Upstream James River,AECO/NIT
-nova,Groundbirch East Receipt,4,82,supply,Groundbirch East,Montney/NE BC
-nova,Gordondale Receipt,8,84,supply,Gordondale,NW Alberta
-nova,AB/BC,18,88,handoff,AB/BC Border (NGTL export),AB/BC

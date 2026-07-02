@@ -1,49 +1,18 @@
 pipeline,point_id,x,y,type,label,zone
-el_paso,48164,6,8,supply,Ramsey North,Permian
-el_paso,301839,6,14,supply,San Juan Complex,San Juan
-el_paso,50498,10,10,supply,Salt Creek,Permian
-el_paso,49444,10,16,supply,Pelican Springs,Permian
-el_paso,48862,6,20,supply,Bounds,Permian
-el_paso,54856,10,22,supply,Peregrine (Waha),West Texas
-foothills,AB/BC,24,86,handoff,Foothills BC (AB/BC to Kingsgate),Kingsgate
-foothills,Empress Border Flow,18,97,border,Empress (east export),Empress
-foothills,Mcneil Border Flow,22,99,border,McNeill (east export),McNeill
-gtn,3498,30,84,border,Kingsgate,Kingsgate
-gtn,1388845,34,72,supply,Stanfield,Stanfield
-gtn,1049174,34,68,supply,Turquoise Flats,Turquoise Flats
-gtn,21749,34,64,supply,Threemile Rd Dairy,Oregon/WA
-gtn,1820,44,82,handoff,Malin (GTN delivery),Malin
-kern_river,33426,6,46,supply,NWPL Muddy Creek,Opal/Rockies
-kern_river,378891,6,51,supply,Pioneer (Enterprise),Opal/Rockies
-kern_river,301571,6,56,supply,Goshen (MtnWest),Rockies
-kern_river,487755,10,47,supply,Hams Fork (Overthrust),Opal/Rockies
-kern_river,361987,10,52,supply,Roberson Creek (Overthrust),Opal/Rockies
-kern_river,39298,10,57,supply,Opal (WFS),Opal
-kern_river,68522,42,42,handoff,Daggett - PG&E (delivery),Daggett
-kern_river,345606,42,36,handoff,Fremont Peak - PG&E (delivery),Daggett
-nova,Total Receipts,4,92,supply,NGTL Total Receipts,AECO/NIT
-nova,NGTL-Field Receipts,4,87,supply,NGTL Field Receipts,AECO/NIT
-nova,USJR,8,90,supply,Upstream James River,AECO/NIT
-nova,Groundbirch East Receipt,4,82,supply,Groundbirch East,Montney/NE BC
-nova,Gordondale Receipt,8,84,supply,Gordondale,NW Alberta
-nova,AB/BC,18,88,handoff,AB/BC Border (NGTL export),AB/BC
-pipe_ranger,malin_gtn,52,80,border,Malin (GTN),Malin
-pipe_ranger,onyx_ruby,52,88,border,Malin (Ruby),Malin
-pipe_ranger,baja_elpaso,54,22,border,Topock (El Paso),Topock
-pipe_ranger,baja_transw,54,14,border,Topock (Transwestern),Topock
-pipe_ranger,baja_daggett,56,40,border,Daggett (Kern River),Daggett
-pipe_ranger,cgt_citygate,70,52,hub,PG&E Citygate,Citygate
-pipe_ranger,Supply_Sys,64,64,balance,System Supply,Citygate
+foothills,AB/BC,8,88,handoff,AB/BC (NGTL export),Kingsgate
+gtn,3498,22,86,border,Kingsgate,Kingsgate
+gtn,1820,38,84,handoff,Malin - GTN,Malin
+kern_river,68522,34,38,handoff,Daggett - Kern (delivery),Daggett
+pipe_ranger,malin_gtn,50,82,border,Malin - PG&E,Malin
+pipe_ranger,onyx_ruby,44,92,border,Malin - Ruby,Malin
+pipe_ranger,baja_transw,48,14,border,Topock - PG&E (TW),Topock
+pipe_ranger,baja_elpaso,48,24,border,Topock - PG&E (El Paso),Topock
+pipe_ranger,baja_daggett,50,38,border,Daggett - PG&E,Daggett
+pipe_ranger,cgt_citygate,68,52,hub,PG&E Citygate,Citygate
 pipe_ranger,Core,92,58,demand,Core Demand,Citygate
-pipe_ranger,System_Demand,94,46,demand,System Demand,Citygate
-pipe_ranger,WG_Net_Inj,74,72,storage,Wild Goose,Sacramento Valley
-pipe_ranger,Lodi_Net_Inj,82,70,storage,Lodi,San Joaquin
+pipe_ranger,System_Demand,92,46,demand,System Demand,Citygate
+pipe_ranger,WG_Net_Inj,72,70,storage,Wild Goose,Sacramento Valley
+pipe_ranger,Lodi_Net_Inj,82,72,storage,Lodi,San Joaquin
 pipe_ranger,CVGS_Inj_Phys,78,64,storage,Central Valley,Central Valley
 pipe_ranger,GRS_LLC_Inj,86,66,storage,Gill Ranch,San Joaquin
-transwestern,56419,6,28,supply,Williams Field Milagro,San Juan
-transwestern,500179,6,33,supply,El Paso Window Rock,San Juan
-transwestern,78423,6,38,supply,Enterprise Chaco,San Juan
-transwestern,79028,10,29,supply,Targa Rojo Banco,Permian
-transwestern,100730,10,34,supply,Targa Wildcat,Permian
-transwestern,79075,10,39,supply,Enterprise South Eddy,Permian
-transwestern,56698,40,18,handoff,PG&E Topock (delivery),Topock
+transwestern,56698,30,16,handoff,Topock - TW (delivery),Topock

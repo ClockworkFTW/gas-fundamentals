@@ -1,8 +1,2 @@
 pipeline,point_id,x,y,type,label,zone
-transwestern,56419,6,28,supply,Williams Field Milagro,San Juan
-transwestern,500179,6,33,supply,El Paso Window Rock,San Juan
-transwestern,78423,6,38,supply,Enterprise Chaco,San Juan
-transwestern,79028,10,29,supply,Targa Rojo Banco,Permian
-transwestern,100730,10,34,supply,Targa Wildcat,Permian
-transwestern,79075,10,39,supply,Enterprise South Eddy,Permian
-transwestern,56698,40,18,handoff,PG&E Topock (delivery),Topock
+transwestern,56698,30,16,handoff,Topock - TW (delivery),Topock

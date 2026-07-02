@@ -11,10 +11,11 @@ import pandas as pd
 
 from etl import dims
 
-# The seven flow pipelines whose topology is seeded under dim/seeds/ (eia is a
-# macro-storage context source with no schematic nodes; ruby is inactive).
-SEEDED_PIPELINES = {"pipe_ranger", "gtn", "el_paso", "transwestern",
-                    "kern_river", "nova", "foothills"}
+# Pipelines with topology nodes in dim/seeds/. The condensed schematic is the
+# major interconnect spine, so El Paso (no delivery record of its own) is carried
+# on Pipe Ranger's Topock border and NGTL/NOVA collapses to the foothills AB/BC
+# export node — neither has a standalone seed file.
+SEEDED_PIPELINES = {"pipe_ranger", "gtn", "transwestern", "kern_river", "foothills"}
 
 
 def test_build_dims_writes_four_csvs(tmp_path):
@@ -93,15 +94,12 @@ def test_committed_topology_seeds_are_coherent():
     for must in [
         ("pipe_ranger", "malin_gtn"), ("pipe_ranger", "baja_elpaso"),
         ("pipe_ranger", "baja_daggett"), ("gtn", "1820"), ("gtn", "3498"),
-        ("transwestern", "56698"), ("kern_river", "68522"),
-        ("nova", "AB/BC"), ("foothills", "AB/BC"),
+        ("transwestern", "56698"), ("kern_river", "68522"), ("foothills", "AB/BC"),
     ]:
         assert must in keys, f"missing schematic join key {must}"
 
-    # Literal-text ids must be preserved exactly (no trim/case/slash mangling).
-    labels = {str(n["point_id"]) for n in loc}
-    for literal in ("AB/BC", "NGTL-Field Receipts", "Mcneil Border Flow", "Total Receipts"):
-        assert literal in labels, f"text point_id {literal!r} was altered or dropped"
+    # The literal-text id must be preserved exactly (no trim/case/slash mangling).
+    assert "AB/BC" in {str(n["point_id"]) for n in loc}, "text point_id 'AB/BC' altered/dropped"
 
     # The synthetic Citygate hub intentionally joins to nothing.
     hub = [n for n in loc if n["type"] == "hub"]

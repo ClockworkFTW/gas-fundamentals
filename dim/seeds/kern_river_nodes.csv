@@ -1,9 +1,2 @@
 pipeline,point_id,x,y,type,label,zone
-kern_river,33426,6,46,supply,NWPL Muddy Creek,Opal/Rockies
-kern_river,378891,6,51,supply,Pioneer (Enterprise),Opal/Rockies
-kern_river,301571,6,56,supply,Goshen (MtnWest),Rockies
-kern_river,487755,10,47,supply,Hams Fork (Overthrust),Opal/Rockies
-kern_river,361987,10,52,supply,Roberson Creek (Overthrust),Opal/Rockies
-kern_river,39298,10,57,supply,Opal (WFS),Opal
-kern_river,68522,42,42,handoff,Daggett - PG&E (delivery),Daggett
-kern_river,345606,42,36,handoff,Fremont Peak - PG&E (delivery),Daggett
+kern_river,68522,34,38,handoff,Daggett - Kern (delivery),Daggett
